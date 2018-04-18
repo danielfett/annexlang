@@ -1,0 +1,24 @@
+#!/usr/bin/python3
+
+import sys
+import yaml
+import sys
+import argparse
+
+from annexlang import TikzPicture
+
+parser = argparse.ArgumentParser(description='Convert an file from the Annex language to a TikZ picture that can be used in TeX documents.')
+parser.add_argument('infile', type=str, help='Input file, YAML format with Annex extensions.')
+parser.add_argument('outfile', type=str, help='Output file, TeX code.')
+args = parser.parse_args()
+
+with open(args.infile, 'r') as inf:
+    src = inf.read()
+
+parsed = yaml.load(src)
+
+with open(args.outfile, 'w') as outf:
+    t = TikzPicture(parsed)
+    t.dump(outf)
+
+    

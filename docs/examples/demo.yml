@@ -1,0 +1,242 @@
+options:
+  enumerate: "\\setcounter{protostep}{%d}\\protostep{%s} "
+  colsep: 0.15\textwidth
+  rowsep: 1ex
+  styles:
+    - !style-default {}
+    #- !style-debug {}
+    - !style-custom
+      style: |
+        server/.style={draw=white,fill=black,text=white},
+protocol:
+  !Protocol
+  parties:
+  - &idp1
+    !Party
+    name: \faServer\ IdP
+    style: server
+  - &b1i
+    !Party
+    name: \faFile\ \url{idp.example/}
+  - &b1d
+    !Party
+    name: \faFile\ \url{example.com/}
+  - &example
+    !Party
+    name: \faServer\ example.com
+    extrawidth: 0.1\textwidth
+    style: server
+  - &b2d
+    !Party
+    name: \faFile\ \url{example.com/}
+  - &b2i
+    !Party
+    name: \faFile\ \url{idp.example/}
+  - &idp2
+    !Party
+    name: \faServer\ IdP
+    style: server
+  
+  groups:
+  - !Group
+    name: \faFirefox\ Browser A
+    parties:
+      - *b1d
+      - *b1i
+  - !Group
+    name: \faChrome\ Browser B
+    parties:
+      - *b2d
+      - *b2i
+  steps:
+# INITIALIZATION
+  - !Parallel
+    steps:
+      - !start-party
+        party: *b1d
+      - !start-party
+        party: *idp1
+      - !start-party
+        party: *example
+      - !start-party
+        party: *b2d
+      - !start-party
+        party: *idp2
+# STARTUP
+  - !Parallel
+    steps:
+      - !Serial # in browser 1
+        steps:
+         - !http-request &get_doc_1
+           src: *b1d
+           dest: *example
+           method: GET
+         - !http-response
+           reply_to: *get_doc_1
+         - !action
+           label: $\mathtt{CREATE\_PEER\_CONNECTION}$
+           party: *b1d
+         - !open-window-start-party
+           src: *b1d
+           dest: *b1i
+         - !http-request &get_doc_2
+           src: *b1i
+           dest: *idp1
+           method: GET
+           path: /.wk/idp-proxy
+         - !http-response
+           reply_to: *get_doc_2
+         - !script-action
+           dest: *b1d
+           src: *b1i
+           label: $\mathtt{GET\_IA\_INFO}$
+           reversed: yes
+           data: $\mathit{stuff}$
+         - !script-action
+           label: $\mathtt{SET\_IA}$
+           dest: *b1d
+           src: *b1i
+           data: $\mathit{results}$
+         - !end-party
+           party: *b1i             
+         - !action
+           label: $\mathtt{GET\_OFFERdd}$
+           party: *b1d
+           
+      - !Serial # in browser 2
+        condense: west
+        steps:
+        - !http-request &get_doc_3
+          src: *b2d
+          dest: *example
+          method: GET
+        - !http-response
+          reply_to: *get_doc_3
+        - !action
+          label: $\mathtt{CREATE\_PEER\_CONNECTION}$
+          party: *b2d
+        - !open-window-start-party
+          src: *b2d
+          dest: *b2i
+        - !http-request &get_doc_4
+            src: *b2i
+            dest: *idp2
+            method: GET
+            path: /.wk/idp-proxy
+        - !http-response
+            reply_to: *get_doc_4
+        - !script-action
+          dest: *b2i
+          src: *b2d
+          label: $\mathtt{GET\_IA\_INFO}$
+        - !script-action
+          label: $\mathtt{SET\_IA}$
+          dest: *b2d
+          src: *b2i
+        - !end-party
+          party: *b2i                         
+        - !action
+          label: $\mathtt{GET\_OFFERxx}$
+          party: *b2d
+# EXCHANGING OFFERS/ANSWERS
+  - !http-request
+    src: *b1d
+    dest: *example
+    parameters: $\mathit{offer}$
+  - !http-request
+    src: *example
+    dest: *b2d
+    parameters: $\mathit{offer}$
+  - !action
+    label: $\mathtt{GET\_OFFER\_SET\_ANSWER}$
+    party: *b2d
+  - !http-request
+    src: *b2d
+    dest: *example
+    parameters: $\mathit{answer}$
+  - !http-request
+    src: *example
+    dest: *b1d
+    parameters: $\mathit{answer}$
+# VERIFICATION
+  - !Parallel
+    steps:
+      - !Serial # in browser 1
+        steps:
+         - !open-window-start-party
+           src: *b1d
+           dest: *b1i
+         - !http-request &get_doc_2_2
+           src: *b1i
+           dest: *idp1
+           method: GET
+           path: /.wk/idp-proxy
+         - !http-response
+           reply_to: *get_doc_2_2
+         - !script-action
+           dest: *b1d
+           src: *b1i
+           label: $\mathtt{GET\_IA\_INFO}$
+           reversed: yes
+           data: $\mathit{stuff}$
+         - !script-action
+           label: $\mathtt{SET\_IA}$
+           dest: *b1d
+           src: *b1i
+           data: $\mathit{results}$
+         - !end-party
+           party: *b1i             
+         - !action
+           label: $\mathtt{GET\_OFFER}$
+           party: *b1d
+          
+      - !Serial # in browser 2
+        steps:
+         - !open-window-start-party
+           src: *b2d
+           dest: *b2i
+         - !http-request &get_doc_3_2
+           src: *b2i
+           dest: *idp2
+           method: GET
+           path: /.wk/idp-proxy
+         - !http-response
+           reply_to: *get_doc_3_2
+         - !script-action
+           dest: *b2d
+           src: *b2i
+           label: $\mathtt{GET\_IA\_INFO}$
+           reversed: yes
+           data: $\mathit{stuff}$
+         - !script-action
+           label: $\mathtt{SET\_IA}$
+           dest: *b2d
+           src: *b2i
+           data: $\mathit{results}$
+         - !end-party
+           party: *b2i             
+         - !action
+           label: $\mathtt{GET\_OFFER}$
+           party: *b2d
+# ESTABLISH DIRECT CONNECTION
+  - !http-request
+    src: *b1d
+    dest: *b2d
+  - !http-request
+    dest: *b1d
+    src: *b2d
+# FINISH UP
+  - !Parallel
+    steps:
+      - !end-party
+        party: *b1d
+      - !end-party
+        party: *idp1
+      - !end-party
+        party: *example
+      - !end-party
+        party: *b2d
+      - !end-party
+        party: *idp2
+    
+  

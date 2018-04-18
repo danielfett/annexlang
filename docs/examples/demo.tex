@@ -1,0 +1,17 @@
+\documentclass{scrartcl}
+\usepackage{fontawesome}
+\usepackage{tikz}
+\usepackage{url}
+\usetikzlibrary{fit,positioning,arrows.meta,decorations.pathreplacing}
+\usepackage[outline]{contour}
+
+\newcounter{protostep}[figure]
+\renewcommand{\theprotostep}{\arabic{protostep}}
+\def\protostep#1{\resizebox{!}{0.8\baselineskip}{\begin{tikzpicture}[baseline={([yshift=-0.5pt]O.base)}] \node (O) [sharp corners,fill=blue,inner sep=1ex]{\color{white}\textbf{\refstepcounter{protostep}\theprotostep\label{protostep:#1}}};\end{tikzpicture}}}
+\def\refprotostep#1{\resizebox{!}{0.6\baselineskip}{\begin{tikzpicture}[baseline={([yshift=-1.5pt]O.base)}] \node (O) [draw,sharp corners]{\ref{protostep:#1}};\end{tikzpicture}}}
+
+
+\begin{document}
+
+\input{demo.yml.tex}
+\end{document}
