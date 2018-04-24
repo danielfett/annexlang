@@ -67,7 +67,7 @@ class ProtocolStep(ProtocolObject):
 
     @cached_property
     def tikz_above(self):
-        if not self.text_above and not getattr(self, 'id_above', True):
+        if not self.text_above and (not getattr(self, 'id_above', True) or not self.tex_id):
             return ""
         else:
             return r"""node [annex_arrow_text,above=2.6pt,anchor=base](%s){%s%s}""" % (
@@ -141,7 +141,7 @@ class MultiStep(ProtocolStep):
             d.draw()
 
     def _init(self, protocol, counter, skip_number):
-        if self.condense:
+        if self.condense or skip_number:
             self.skip_number = False
             skip_numbers = True
         else:
@@ -153,6 +153,7 @@ class MultiStep(ProtocolStep):
     def tikz_markers(self):
         if not self.condense:
             return ""
+
         if type(self.condense) is not str:
             self.condense = 'north west'
 

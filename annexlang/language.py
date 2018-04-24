@@ -36,9 +36,9 @@ class HTTPRequest(ProtocolStep):
         if self.tikz_above and self.tikz_below:
             return "6ex", "center"
         elif self.tikz_above:
-            return "3ex", "south"
+            return "4ex", "south,yshift=-1ex"
         elif self.tikz_below:
-            return "3ex", "north"
+            return "4ex", "north,yshift=1ex"
         else:
             return "1ex", "center"
     
@@ -162,7 +162,7 @@ class OpenWindowStartParty(StartParty):
     
     @property
     def height(self):
-        return "5ex", "center"
+        return "6ex", "center,yshift=1ex"
     
     @property
     def affected_parties(self):

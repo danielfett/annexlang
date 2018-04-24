@@ -27,7 +27,7 @@ class TikzPicture:
         \pgfdeclarelayer{groups}
         \pgfdeclarelayer{markers}
         \pgfsetlayers{groups,arrows,main,markers}
-        \scriptsize""" % style_string)
+        """ % style_string)
 
     def dump_matrix(self, f):
         line_offset = 1 if self.protocol.has_groups else 0
@@ -53,7 +53,7 @@ class TikzPicture:
                 extrawidths = []
                 if hasattr(self.protocol.parties[col], 'extrawidth'):
                     extrawidths.append(self.protocol.parties[col].extrawidth + "/2")
-                if col < (len(self.protocol.parties) - 1) and  hasattr(self.protocol.parties[col+1], 'extrawidth'):
+                if col < (len(self.protocol.parties) - 1) and hasattr(self.protocol.parties[col+1], 'extrawidth'):
                     extrawidths.append(self.protocol.parties[col+1].extrawidth + "/2")
                 if col < len(self.protocol.parties) - line_offset:
                     f.write(r""" &""" )
