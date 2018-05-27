@@ -209,7 +209,7 @@ for line in open(sys.argv[1], 'r'):
 
 
 print ("options:")
-print ('  enumerate: "\\setcounter{protostep}{%d}\\protostep{%s} ')
+print (r'  enumerate: "\\setcounter{protostep}{%d}\\protostep{%s}"')
 print ('  styles:')
 print ('    - !style-default {}')
 print ('protocol:')
@@ -229,9 +229,8 @@ print ('    steps:')
 
 for p in parties:
     pname = p.lower()
-    print (f'  - &{pname}')
-    print ( '    !Party')
-    print (f'    name: {p}')
+    print (f'    - !start-party')
+    print (f'      party: *{pname}')
 
 print ('# PROTOCOL')
 
@@ -240,14 +239,23 @@ for b in blocks:
         method = b.type[5:].upper()
         
         print (f'  - !http-request &{getattr(b, "id", id(b))}')
-        print (f'    src: {getattr(b, "from").lower()}')
-        print (f'    dest: {getattr(b, "to").lower()}')
+        print (f'    src: *{getattr(b, "from").lower()}')
+        print (f'    dest: *{getattr(b, "to").lower()}')
         print (f'    method: {method}')
         if hasattr(b, 'path'):
             print (f'    path: {b.path}')
         if hasattr(b, 'contents'):
-            print (f'    parameters: {b.contents}')
+            params = b.contents.replace(r'\\', '\\\\')
+            print (f'    parameters: {params}')
             
         
         
         
+print ('# FINISH UP')
+print ('  - !Parallel')
+print ('    steps:')
+
+for p in parties:
+    pname = p.lower()
+    print (f'    - !end-party')
+    print (f'      party: *{pname}')
