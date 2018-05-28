@@ -219,6 +219,9 @@ protocol:
            label: $\mathtt{GET\_OFFER}$
            party: *b2d
 # ESTABLISH DIRECT CONNECTION
+  - --------------------------------
+  - !comment
+    label: "Establish direct connection:"
   - !http-request
     src: *b1d
     dest: *b2d

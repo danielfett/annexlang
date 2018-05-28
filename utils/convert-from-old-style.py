@@ -208,54 +208,51 @@ for line in open(sys.argv[1], 'r'):
         block.add(key, value)
 
 
-print ("options:")
-print (r'  enumerate: "\\setcounter{protostep}{%d}\\protostep{%s}"')
-print ('  styles:')
-print ('    - !style-default {}')
-print ('protocol:')
-print ('  !Protocol')
-print ('  parties:')
+print("options:")
+print(r'  enumerate: "\\setcounter{protostep}{%d}\\protostep{%s}"')
+print('  styles:')
+print('    - !style-default {}')
+print('protocol:')
+print('  !Protocol')
+print('  parties:')
 
 for p in parties:
     pname = p.lower()
-    print (f'  - &{pname}')
-    print ( '    !Party')
-    print (f'    name: {p}')
+    print(f'  - &{pname}')
+    print( '    !Party')
+    print(f'    name: {p}')
 
-print ('  steps:')
-print ('# INITIALIZATION')
-print ('  - !Parallel')
-print ('    steps:')
+print('  steps:')
+print('# INITIALIZATION')
+print('  - !Parallel')
+print('    steps:')
 
 for p in parties:
     pname = p.lower()
-    print (f'    - !start-party')
-    print (f'      party: *{pname}')
+    print(f'    - !start-party')
+    print(f'      party: *{pname}')
 
-print ('# PROTOCOL')
+print('# PROTOCOL')
 
 for b in blocks:
     if b.type == 'http-post' or b.type == 'http-get':
         method = b.type[5:].upper()
         
-        print (f'  - !http-request &{getattr(b, "id", id(b))}')
-        print (f'    src: *{getattr(b, "from").lower()}')
-        print (f'    dest: *{getattr(b, "to").lower()}')
-        print (f'    method: {method}')
+        print(f'  - !http-request &{getattr(b, "id", id(b))}')
+        print(f'    src: *{getattr(b, "from").lower()}')
+        print(f'    dest: *{getattr(b, "to").lower()}')
+        print(f'    method: {method}')
         if hasattr(b, 'path'):
-            print (f'    path: {b.path}')
+            print(f'    path: {b.path}')
         if hasattr(b, 'contents'):
             params = b.contents.replace(r'\\', '\\\\')
-            print (f'    parameters: {params}')
+            print(f'    parameters: {params}')
             
-        
-        
-        
-print ('# FINISH UP')
-print ('  - !Parallel')
-print ('    steps:')
+print('# FINISH UP')
+print('  - !Parallel')
+print('    steps:')
 
 for p in parties:
     pname = p.lower()
-    print (f'    - !end-party')
-    print (f'      party: *{pname}')
+    print(f'    - !end-party')
+    print(f'      party: *{pname}')

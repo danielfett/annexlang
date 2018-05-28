@@ -1,17 +1,675 @@
-\documentclass{scrartcl}
-\usepackage{fontawesome}
-\usepackage{tikz}
-\usepackage{url}
-\usetikzlibrary{fit,positioning,arrows.meta,decorations.pathreplacing}
-\usepackage[outline]{contour}
 
-\newcounter{protostep}[figure]
-\renewcommand{\theprotostep}{\arabic{protostep}}
-\def\protostep#1{\resizebox{!}{0.8\baselineskip}{\begin{tikzpicture}[baseline={([yshift=-0.5pt]O.base)}] \node (O) [sharp corners,fill=blue,inner sep=1ex]{\color{white}\textbf{\refstepcounter{protostep}\theprotostep\label{protostep:#1}}};\end{tikzpicture}}}
-\def\refprotostep#1{\resizebox{!}{0.6\baselineskip}{\begin{tikzpicture}[baseline={([yshift=-1.5pt]O.base)}] \node (O) [draw,sharp corners]{\ref{protostep:#1}};\end{tikzpicture}}}
+        \begin{tikzpicture}[% basics
+    every node/.style={font=\sffamily\tiny},
+    annex_lifeline/.style={draw=black!30},
+    annex_matrix_node/.style={},
+    annex_matrix_dummy_height/.style={},
+    % default style used below
+    line/.style={draw=yellow!50!green},
+    % groups
+    annex_group_box/.style={draw=black!50,dashed,rounded corners=1ex},
+    annex_group_title_placeholder/.style={},
+    annex_condensed_box/.style={draw=blue,rounded corners=1ex,inner sep=0},
+    % start/end parties
+    annex_start_party_box/.style={fill=white,draw,rounded corners=0.3ex,anchor=center,inner sep=0.5ex,minimum height=1.7em,inner sep=1.5mm},
+    annex_end_party_box/.style={annex_start_party_box,scale=0.7},
+    % individual steps
+    annex_arrow_text/.style={font=\sffamily\tiny},
+    annex_http_request/.style={-Latex,line,draw=purple},
+    annex_http_response/.style={-Latex[open],line,draw=purple},
+    annex_action/.style={fill=white,inner sep=0ex,minimum height=1.5em},
+    annex_open_window/.style={->,line,dashed},
+    annex_script_action_box/.style={annex_action,anchor=center},
+    annex_script_action_arrow/.style={->,line},
+    annex_script_action_arrow_reversed/.style={<-,line},
+    annex_open_window_start_party_box/.style={annex_start_party_box},
+    annex_open_window_start_party_arrow/.style={->,line,dashed},server/.style={draw=white,fill=black,text=white}]
+        \pgfdeclarelayer{arrows}
+        \pgfdeclarelayer{groups}
+        \pgfdeclarelayer{markers}
+        \pgfsetlayers{groups,arrows,main,markers}
+        
+        % MATRIX
+        \matrix [column sep={0.15\textwidth,between origins}, row sep=1ex]
+        {
+        \node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-0){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-0){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-0){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-0){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-0){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-0){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-0){};\node[annex_group_title_placeholder,minimum height=2em]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-1){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-1){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-1){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-1){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-1){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-1){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-1){};\node[annex_matrix_dummy_height,minimum height=5ex,anchor=center]{};\node[annex_matrix_dummy_height,minimum height=5ex,anchor=center]{};\node[annex_matrix_dummy_height,minimum height=5ex,anchor=center]{};\node[annex_matrix_dummy_height,minimum height=5ex,anchor=center]{};\node[annex_matrix_dummy_height,minimum height=5ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-2){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-2){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-2){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-2){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-2){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-2){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-2){};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=south,yshift=-1ex]{};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=south,yshift=-1ex]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-3){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-3){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-3){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-3){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-3){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-3){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-3){};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=south,yshift=-1ex]{};\node[annex_matrix_dummy_height,minimum height=1ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-4){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-4){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-4){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-4){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-4){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-4){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-4){};\node[annex_matrix_dummy_height,minimum height=3ex,anchor=center]{};\node[annex_matrix_dummy_height,minimum height=3ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-5){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-5){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-5){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-5){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-5){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-5){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-5){};\node[annex_matrix_dummy_height,minimum height=6ex,anchor=center,yshift=1ex]{};\node[annex_matrix_dummy_height,minimum height=6ex,anchor=center,yshift=1ex]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-6){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-6){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-6){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-6){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-6){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-6){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-6){};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=south,yshift=-1ex]{};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=south,yshift=-1ex]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-7){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-7){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-7){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-7){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-7){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-7){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-7){};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=south,yshift=-1ex]{};\node[annex_matrix_dummy_height,minimum height=1ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-8){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-8){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-8){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-8){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-8){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-8){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-8){};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=center]{};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-9){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-9){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-9){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-9){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-9){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-9){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-9){};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=center]{};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-10){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-10){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-10){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-10){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-10){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-10){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-10){};\node[annex_matrix_dummy_height,minimum height=5ex,anchor=center]{};\node[annex_matrix_dummy_height,minimum height=5ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-11){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-11){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-11){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-11){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-11){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-11){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-11){};\node[annex_matrix_dummy_height,minimum height=3ex,anchor=center]{};\node[annex_matrix_dummy_height,minimum height=3ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-12){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-12){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-12){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-12){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-12){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-12){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-12){};\node[annex_matrix_dummy_height,minimum height=6ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-13){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-13){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-13){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-13){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-13){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-13){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-13){};\node[annex_matrix_dummy_height,minimum height=6ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-14){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-14){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-14){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-14){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-14){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-14){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-14){};\node[annex_matrix_dummy_height,minimum height=3ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-15){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-15){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-15){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-15){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-15){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-15){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-15){};\node[annex_matrix_dummy_height,minimum height=6ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-16){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-16){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-16){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-16){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-16){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-16){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-16){};\node[annex_matrix_dummy_height,minimum height=6ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-17){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-17){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-17){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-17){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-17){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-17){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-17){};\node[annex_matrix_dummy_height,minimum height=6ex,anchor=center,yshift=1ex]{};\node[annex_matrix_dummy_height,minimum height=6ex,anchor=center,yshift=1ex]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-18){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-18){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-18){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-18){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-18){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-18){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-18){};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=south,yshift=-1ex]{};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=south,yshift=-1ex]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-19){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-19){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-19){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-19){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-19){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-19){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-19){};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=south,yshift=-1ex]{};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=south,yshift=-1ex]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-20){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-20){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-20){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-20){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-20){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-20){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-20){};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=center]{};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-21){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-21){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-21){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-21){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-21){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-21){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-21){};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=center]{};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-22){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-22){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-22){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-22){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-22){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-22){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-22){};\node[annex_matrix_dummy_height,minimum height=5ex,anchor=center]{};\node[annex_matrix_dummy_height,minimum height=5ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-23){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-23){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-23){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-23){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-23){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-23){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-23){};\node[annex_matrix_dummy_height,minimum height=3ex,anchor=center]{};\node[annex_matrix_dummy_height,minimum height=3ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-24){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-24){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-24){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-24){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-24){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-24){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-24){};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=center]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-25){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-25){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-25){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-25){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-25){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-25){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-25){};\node[annex_matrix_dummy_height,minimum height=6ex,anchor=center,yshift=1ex]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-26){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-26){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-26){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-26){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-26){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-26){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-26){};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=south,yshift=-1ex]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-27){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-27){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-27){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-27){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-27){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-27){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-27){};\node[annex_matrix_dummy_height,minimum height=4ex,anchor=south,yshift=-1ex]{};\\
+\node[annex_matrix_node,inner sep=0,outer sep=0](pos-0-28){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-1-28){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-2-28){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-3-28){}; &[0.1\textwidth/2]\node[annex_matrix_node,inner sep=0,outer sep=0](pos-4-28){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-5-28){}; &\node[annex_matrix_node,inner sep=0,outer sep=0](pos-6-28){};\node[annex_matrix_dummy_height,minimum height=5ex,anchor=center]{};\node[annex_matrix_dummy_height,minimum height=5ex,anchor=center]{};\node[annex_matrix_dummy_height,minimum height=5ex,anchor=center]{};\node[annex_matrix_dummy_height,minimum height=5ex,anchor=center]{};\node[annex_matrix_dummy_height,minimum height=5ex,anchor=center]{};\\
+};
+
+% MAIN LAYER
+
+% drawing node of type Protocol in matrix line 1 with attributes: {'annexid': 'Protocol-1', 'parties': [<Party-2>, <Party-3>, <Party-4>, <Party-5>, <Party-6>, <Party-7>, <Party-8>], 'groups': [<Group-9>, <Group-10>], 'steps': [<Parallel-11>, <Parallel-12>, <HTTPRequest-13>, <HTTPRequest-14>, <Action-15>, <HTTPRequest-16>, <HTTPRequest-17>, <Parallel-18>, <Separator-19>, <Comment-20>, <HTTPRequest-21>, <HTTPRequest-22>, <Parallel-23>], 'options': {'colsep': '0.15\\textwidth', 'rowsep': '1ex', 'enumerate': '\\setcounter{protostep}{%d}\\protostep{%s} ', 'styles': [<annexlang.styles.StyleDefault object at 0x7f10bb4a7ac8>, <annexlang.styles.StyleCustom object at 0x7f10bb4a77f0>]}, 'line': 1, 'length': 28, 'protocol': <Protocol-1>}
 
 
-\begin{document}
+% drawing node of type Parallel in matrix line 1 with attributes: {'annexid': 'Parallel-11', 'steps': [<StartParty-24>, <StartParty-25>, <StartParty-26>, <StartParty-27>, <StartParty-28>], 'line': 1, 'length': 1, 'protocol': <Protocol-1>}
 
-\input{demo.yml.tex}
-\end{document}
+
+% drawing node of type StartParty in matrix line 1 with attributes: {'annexid': 'StartParty-24', 'party': <Party-4>, 'line': 1, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838135080n0'], 'node_name': 'node139709838135080n0', 'end': <EndParty-33>}
+\node[name=node139709838135080n0,annex_start_party_box,] at (pos-2-1) {\faFile\ \url{example.com/}};
+
+% drawing node of type StartParty in matrix line 1 with attributes: {'annexid': 'StartParty-25', 'party': <Party-2>, 'line': 1, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838135136n0'], 'node_name': 'node139709838135136n0', 'end': <EndParty-34>}
+\node[name=node139709838135136n0,annex_start_party_box,server] at (pos-0-1) {\faServer\ IdP};
+
+% drawing node of type StartParty in matrix line 1 with attributes: {'annexid': 'StartParty-26', 'party': <Party-5>, 'line': 1, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838135192n0'], 'node_name': 'node139709838135192n0', 'end': <EndParty-35>}
+\node[name=node139709838135192n0,annex_start_party_box,server] at (pos-3-1) {\faServer\ example.com};
+
+% drawing node of type StartParty in matrix line 1 with attributes: {'annexid': 'StartParty-27', 'party': <Party-6>, 'line': 1, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838135248n0'], 'node_name': 'node139709838135248n0', 'end': <EndParty-36>}
+\node[name=node139709838135248n0,annex_start_party_box,] at (pos-4-1) {\faFile\ \url{example.com/}};
+
+% drawing node of type StartParty in matrix line 1 with attributes: {'annexid': 'StartParty-28', 'party': <Party-8>, 'line': 1, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168136n0'], 'node_name': 'node139709838168136n0', 'end': <EndParty-37>}
+\node[name=node139709838168136n0,annex_start_party_box,server] at (pos-6-1) {\faServer\ IdP};
+
+% drawing node of type Parallel in matrix line 2 with attributes: {'annexid': 'Parallel-12', 'steps': [<Serial-29>, <Serial-30>], 'line': 2, 'length': 10, 'protocol': <Protocol-1>}
+
+
+% drawing node of type Serial in matrix line 2 with attributes: {'annexid': 'Serial-29', 'steps': [<HTTPRequest-38>, <HTTPResponse-39>, <Action-40>, <OpenWindowStartParty-41>, <HTTPRequest-42>, <HTTPResponse-43>, <ScriptAction-44>, <ScriptAction-45>, <EndParty-46>, <Action-47>], 'line': 2, 'length': 10, 'protocol': <Protocol-1>}
+
+
+% drawing node of type HTTPRequest in matrix line 2 with attributes: {'annexid': 'HTTPRequest-38', 'src': <Party-4>, 'dest': <Party-5>, 'method': 'GET', 'line': 2, 'protocol': <Protocol-1>, 'counter': 1, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-2-2', 'pos-3-2', 'node139709838168696n0'], 'node_name_counter': 1, 'tex_id': '\\setcounter{protostep}{0}\\protostep{HTTPRequest-38} ', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168696n0){\\setcounter{protostep}{0}\\protostep{HTTPRequest-38} \\contour{white}{GET}}', 'tikz_below': ''}
+
+
+% drawing node of type HTTPResponse in matrix line 3 with attributes: {'annexid': 'HTTPResponse-39', 'reply_to': <HTTPRequest-38>, 'line': 3, 'protocol': <Protocol-1>, 'counter': 2, 'text_above': '', 'text_below': '', 'dest': <Party-4>, 'src': <Party-5>, '_affecting_nodes': ['pos-3-3', 'pos-2-3', 'node139709838168752n0'], 'tex_id': '\\setcounter{protostep}{1}\\protostep{HTTPResponse-39} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168752n0){\\setcounter{protostep}{1}\\protostep{HTTPResponse-39} }', 'tikz_below': ''}
+
+
+% drawing node of type Action in matrix line 4 with attributes: {'annexid': 'Action-40', 'label': '$\\mathtt{CREATE\\_PEER\\_CONNECTION}$', 'party': <Party-4>, 'line': 4, 'protocol': <Protocol-1>, 'counter': 3, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168808n0'], 'node_name': 'node139709838168808n0'}
+\node[annex_action,name=node139709838168808n0] at (pos-2-4) {\setcounter{protostep}{2}\protostep{Action-40} \contour{white}{$\mathtt{CREATE\_PEER\_CONNECTION}$}};
+
+% drawing node of type OpenWindowStartParty in matrix line 5 with attributes: {'annexid': 'OpenWindowStartParty-41', 'src': <Party-4>, 'dest': <Party-3>, 'line': 5, 'protocol': <Protocol-1>, 'counter': 4, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168864n0'], 'node_name': 'node139709838168864n0', 'party': <Party-3>, 'end': <EndParty-46>}
+\node[name=node139709838168864n0,annex_start_party_box,] at (pos-1-5) {\faFile\ \url{idp.example/}};
+
+% drawing node of type HTTPRequest in matrix line 6 with attributes: {'annexid': 'HTTPRequest-42', 'src': <Party-3>, 'dest': <Party-2>, 'method': 'GET', 'path': '/.wk/idp-proxy', 'line': 6, 'protocol': <Protocol-1>, 'counter': 5, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-1-6', 'pos-0-6', 'node139709838168920n0'], 'node_name_counter': 1, 'tex_id': '\\setcounter{protostep}{4}\\protostep{HTTPRequest-42} ', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168920n0){\\setcounter{protostep}{4}\\protostep{HTTPRequest-42} \\contour{white}{GET}}', 'tikz_below': ''}
+
+
+% drawing node of type HTTPResponse in matrix line 7 with attributes: {'annexid': 'HTTPResponse-43', 'reply_to': <HTTPRequest-42>, 'line': 7, 'protocol': <Protocol-1>, 'counter': 6, 'text_above': '', 'text_below': '', 'dest': <Party-3>, 'src': <Party-2>, '_affecting_nodes': ['pos-0-7', 'pos-1-7', 'node139709838168976n0'], 'tex_id': '\\setcounter{protostep}{5}\\protostep{HTTPResponse-43} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168976n0){\\setcounter{protostep}{5}\\protostep{HTTPResponse-43} }', 'tikz_below': ''}
+
+
+% drawing node of type ScriptAction in matrix line 8 with attributes: {'annexid': 'ScriptAction-44', 'dest': <Party-4>, 'src': <Party-3>, 'label': '$\\mathtt{GET\\_IA\\_INFO}$', 'reversed': True, 'data': '$\\mathit{stuff}$', 'line': 8, 'party': <Party-3>, 'protocol': <Protocol-1>, 'counter': 7, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169032n0'], 'node_name': 'node139709838169032n0'}
+\node[annex_action,name=node139709838169032n0] at (pos-1-8) {\setcounter{protostep}{6}\protostep{ScriptAction-44} \contour{white}{$\mathtt{GET\_IA\_INFO}$}};
+
+% drawing node of type ScriptAction in matrix line 9 with attributes: {'annexid': 'ScriptAction-45', 'label': '$\\mathtt{SET\\_IA}$', 'dest': <Party-4>, 'src': <Party-3>, 'data': '$\\mathit{results}$', 'line': 9, 'party': <Party-3>, 'protocol': <Protocol-1>, 'counter': 8, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169088n0'], 'node_name': 'node139709838169088n0'}
+\node[annex_action,name=node139709838169088n0] at (pos-1-9) {\setcounter{protostep}{7}\protostep{ScriptAction-45} \contour{white}{$\mathtt{SET\_IA}$}};
+
+% drawing node of type EndParty in matrix line 10 with attributes: {'annexid': 'EndParty-46', 'party': <Party-3>, 'line': 10, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169144n0'], 'node_name': 'node139709838169144n0'}
+\node[name=node139709838169144n0,annex_end_party_box,] at (pos-1-10) {\faFile\ \url{idp.example/}};
+
+% drawing node of type Action in matrix line 11 with attributes: {'annexid': 'Action-47', 'label': '$\\mathtt{GET\\_OFFERdd}$', 'party': <Party-4>, 'line': 11, 'protocol': <Protocol-1>, 'counter': 9, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169200n0'], 'node_name': 'node139709838169200n0'}
+\node[annex_action,name=node139709838169200n0] at (pos-2-11) {\setcounter{protostep}{8}\protostep{Action-47} \contour{white}{$\mathtt{GET\_OFFERdd}$}};
+
+% drawing node of type Serial in matrix line 2 with attributes: {'annexid': 'Serial-30', 'condense': 'west', 'steps': [<HTTPRequest-48>, <HTTPResponse-49>, <Action-50>, <OpenWindowStartParty-51>, <HTTPRequest-52>, <HTTPResponse-53>, <ScriptAction-54>, <ScriptAction-55>, <EndParty-56>, <Action-57>], 'line': 2, 'length': 10, 'skip_number': False, 'protocol': <Protocol-1>, 'counter': 10}
+
+
+% drawing node of type HTTPRequest in matrix line 2 with attributes: {'annexid': 'HTTPRequest-48', 'src': <Party-6>, 'dest': <Party-5>, 'method': 'GET', 'line': 2, 'protocol': <Protocol-1>, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-4-2', 'pos-3-2', 'node139709838169256n0'], 'node_name_counter': 1, 'tex_id': '', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169256n0){\\contour{white}{GET}}', 'tikz_below': ''}
+
+
+% drawing node of type HTTPResponse in matrix line 3 with attributes: {'annexid': 'HTTPResponse-49', 'reply_to': <HTTPRequest-48>, 'line': 3, 'protocol': <Protocol-1>, 'text_above': '', 'text_below': '', 'dest': <Party-6>, 'src': <Party-5>, '_affecting_nodes': ['pos-3-3', 'pos-4-3'], 'tex_id': '', 'tikz_above': '', 'tikz_below': ''}
+
+
+% drawing node of type Action in matrix line 4 with attributes: {'annexid': 'Action-50', 'label': '$\\mathtt{CREATE\\_PEER\\_CONNECTION}$', 'party': <Party-6>, 'line': 4, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169368n0'], 'node_name': 'node139709838169368n0'}
+\node[annex_action,name=node139709838169368n0] at (pos-4-4) {\contour{white}{$\mathtt{CREATE\_PEER\_CONNECTION}$}};
+
+% drawing node of type OpenWindowStartParty in matrix line 5 with attributes: {'annexid': 'OpenWindowStartParty-51', 'src': <Party-6>, 'dest': <Party-7>, 'line': 5, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169424n0'], 'node_name': 'node139709838169424n0', 'party': <Party-7>, 'end': <EndParty-56>}
+\node[name=node139709838169424n0,annex_start_party_box,] at (pos-5-5) {\faFile\ \url{idp.example/}};
+
+% drawing node of type HTTPRequest in matrix line 6 with attributes: {'annexid': 'HTTPRequest-52', 'src': <Party-7>, 'dest': <Party-8>, 'method': 'GET', 'path': '/.wk/idp-proxy', 'line': 6, 'protocol': <Protocol-1>, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-5-6', 'pos-6-6', 'node139709838169480n0'], 'node_name_counter': 1, 'tex_id': '', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169480n0){\\contour{white}{GET}}', 'tikz_below': ''}
+
+
+% drawing node of type HTTPResponse in matrix line 7 with attributes: {'annexid': 'HTTPResponse-53', 'reply_to': <HTTPRequest-52>, 'line': 7, 'protocol': <Protocol-1>, 'text_above': '', 'text_below': '', 'dest': <Party-7>, 'src': <Party-8>, '_affecting_nodes': ['pos-6-7', 'pos-5-7'], 'tex_id': '', 'tikz_above': '', 'tikz_below': ''}
+
+
+% drawing node of type ScriptAction in matrix line 8 with attributes: {'annexid': 'ScriptAction-54', 'dest': <Party-7>, 'src': <Party-6>, 'label': '$\\mathtt{GET\\_IA\\_INFO}$', 'line': 8, 'party': <Party-6>, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169592n0'], 'node_name': 'node139709838169592n0'}
+\node[annex_action,name=node139709838169592n0] at (pos-4-8) {\contour{white}{$\mathtt{GET\_IA\_INFO}$}};
+
+% drawing node of type ScriptAction in matrix line 9 with attributes: {'annexid': 'ScriptAction-55', 'label': '$\\mathtt{SET\\_IA}$', 'dest': <Party-6>, 'src': <Party-7>, 'line': 9, 'party': <Party-7>, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169648n0'], 'node_name': 'node139709838169648n0'}
+\node[annex_action,name=node139709838169648n0] at (pos-5-9) {\contour{white}{$\mathtt{SET\_IA}$}};
+
+% drawing node of type EndParty in matrix line 10 with attributes: {'annexid': 'EndParty-56', 'party': <Party-7>, 'line': 10, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169704n0'], 'node_name': 'node139709838169704n0'}
+\node[name=node139709838169704n0,annex_end_party_box,] at (pos-5-10) {\faFile\ \url{idp.example/}};
+
+% drawing node of type Action in matrix line 11 with attributes: {'annexid': 'Action-57', 'label': '$\\mathtt{GET\\_OFFERxx}$', 'party': <Party-6>, 'line': 11, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169760n0'], 'node_name': 'node139709838169760n0'}
+\node[annex_action,name=node139709838169760n0] at (pos-4-11) {\contour{white}{$\mathtt{GET\_OFFERxx}$}};
+
+% drawing node of type HTTPRequest in matrix line 12 with attributes: {'annexid': 'HTTPRequest-13', 'src': <Party-4>, 'dest': <Party-5>, 'parameters': '$\\mathit{offer}$', 'line': 12, 'protocol': <Protocol-1>, 'counter': 11, 'text_above': '', 'text_below': '$\\mathit{offer}$', '_affecting_nodes': ['pos-2-12', 'pos-3-12', 'node139709838134520n0', 'node139709838134520n1'], 'tex_id': '\\setcounter{protostep}{10}\\protostep{HTTPRequest-13} ', 'node_name_counter': 2, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134520n0){\\setcounter{protostep}{10}\\protostep{HTTPRequest-13} }', 'tikz_below': 'node [annex_arrow_text,below=8pt,anchor=base](node139709838134520n1){\\contour{white}{$\\mathit{offer}$}}'}
+
+
+% drawing node of type HTTPRequest in matrix line 13 with attributes: {'annexid': 'HTTPRequest-14', 'src': <Party-5>, 'dest': <Party-6>, 'parameters': '$\\mathit{offer}$', 'line': 13, 'protocol': <Protocol-1>, 'counter': 12, 'text_above': '', 'text_below': '$\\mathit{offer}$', '_affecting_nodes': ['pos-3-13', 'pos-4-13', 'node139709838133792n0', 'node139709838133792n1'], 'tex_id': '\\setcounter{protostep}{11}\\protostep{HTTPRequest-14} ', 'node_name_counter': 2, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838133792n0){\\setcounter{protostep}{11}\\protostep{HTTPRequest-14} }', 'tikz_below': 'node [annex_arrow_text,below=8pt,anchor=base](node139709838133792n1){\\contour{white}{$\\mathit{offer}$}}'}
+
+
+% drawing node of type Action in matrix line 14 with attributes: {'annexid': 'Action-15', 'label': '$\\mathtt{GET\\_OFFER\\_SET\\_ANSWER}$', 'party': <Party-6>, 'line': 14, 'protocol': <Protocol-1>, 'counter': 13, 'node_name_counter': 1, '_affecting_nodes': ['node139709838134576n0'], 'node_name': 'node139709838134576n0'}
+\node[annex_action,name=node139709838134576n0] at (pos-4-14) {\setcounter{protostep}{12}\protostep{Action-15} \contour{white}{$\mathtt{GET\_OFFER\_SET\_ANSWER}$}};
+
+% drawing node of type HTTPRequest in matrix line 15 with attributes: {'annexid': 'HTTPRequest-16', 'src': <Party-6>, 'dest': <Party-5>, 'parameters': '$\\mathit{answer}$', 'line': 15, 'protocol': <Protocol-1>, 'counter': 14, 'text_above': '', 'text_below': '$\\mathit{answer}$', '_affecting_nodes': ['pos-4-15', 'pos-3-15', 'node139709838134632n0', 'node139709838134632n1'], 'tex_id': '\\setcounter{protostep}{13}\\protostep{HTTPRequest-16} ', 'node_name_counter': 2, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134632n0){\\setcounter{protostep}{13}\\protostep{HTTPRequest-16} }', 'tikz_below': 'node [annex_arrow_text,below=8pt,anchor=base](node139709838134632n1){\\contour{white}{$\\mathit{answer}$}}'}
+
+
+% drawing node of type HTTPRequest in matrix line 16 with attributes: {'annexid': 'HTTPRequest-17', 'src': <Party-5>, 'dest': <Party-4>, 'parameters': '$\\mathit{answer}$', 'line': 16, 'protocol': <Protocol-1>, 'counter': 15, 'text_above': '', 'text_below': '$\\mathit{answer}$', '_affecting_nodes': ['pos-3-16', 'pos-2-16', 'node139709838134688n0', 'node139709838134688n1'], 'tex_id': '\\setcounter{protostep}{14}\\protostep{HTTPRequest-17} ', 'node_name_counter': 2, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134688n0){\\setcounter{protostep}{14}\\protostep{HTTPRequest-17} }', 'tikz_below': 'node [annex_arrow_text,below=8pt,anchor=base](node139709838134688n1){\\contour{white}{$\\mathit{answer}$}}'}
+
+
+% drawing node of type Parallel in matrix line 17 with attributes: {'annexid': 'Parallel-18', 'steps': [<Serial-31>, <Serial-32>], 'line': 17, 'length': 7, 'protocol': <Protocol-1>}
+
+
+% drawing node of type Serial in matrix line 17 with attributes: {'annexid': 'Serial-31', 'steps': [<OpenWindowStartParty-58>, <HTTPRequest-59>, <HTTPResponse-60>, <ScriptAction-61>, <ScriptAction-62>, <EndParty-63>, <Action-64>], 'line': 17, 'length': 7, 'protocol': <Protocol-1>}
+
+
+% drawing node of type OpenWindowStartParty in matrix line 17 with attributes: {'annexid': 'OpenWindowStartParty-58', 'src': <Party-4>, 'dest': <Party-3>, 'line': 17, 'protocol': <Protocol-1>, 'counter': 16, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169816n0'], 'node_name': 'node139709838169816n0', 'party': <Party-3>, 'end': <EndParty-63>}
+\node[name=node139709838169816n0,annex_start_party_box,] at (pos-1-17) {\faFile\ \url{idp.example/}};
+
+% drawing node of type HTTPRequest in matrix line 18 with attributes: {'annexid': 'HTTPRequest-59', 'src': <Party-3>, 'dest': <Party-2>, 'method': 'GET', 'path': '/.wk/idp-proxy', 'line': 18, 'protocol': <Protocol-1>, 'counter': 17, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-1-18', 'pos-0-18', 'node139709838169872n0'], 'node_name_counter': 1, 'tex_id': '\\setcounter{protostep}{16}\\protostep{HTTPRequest-59} ', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169872n0){\\setcounter{protostep}{16}\\protostep{HTTPRequest-59} \\contour{white}{GET}}', 'tikz_below': ''}
+
+
+% drawing node of type HTTPResponse in matrix line 19 with attributes: {'annexid': 'HTTPResponse-60', 'reply_to': <HTTPRequest-59>, 'line': 19, 'protocol': <Protocol-1>, 'counter': 18, 'text_above': '', 'text_below': '', 'dest': <Party-3>, 'src': <Party-2>, '_affecting_nodes': ['pos-0-19', 'pos-1-19', 'node139709838169928n0'], 'tex_id': '\\setcounter{protostep}{17}\\protostep{HTTPResponse-60} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169928n0){\\setcounter{protostep}{17}\\protostep{HTTPResponse-60} }', 'tikz_below': ''}
+
+
+% drawing node of type ScriptAction in matrix line 20 with attributes: {'annexid': 'ScriptAction-61', 'dest': <Party-4>, 'src': <Party-3>, 'label': '$\\mathtt{GET\\_IA\\_INFO}$', 'reversed': True, 'data': '$\\mathit{stuff}$', 'line': 20, 'party': <Party-3>, 'protocol': <Protocol-1>, 'counter': 19, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169984n0'], 'node_name': 'node139709838169984n0'}
+\node[annex_action,name=node139709838169984n0] at (pos-1-20) {\setcounter{protostep}{18}\protostep{ScriptAction-61} \contour{white}{$\mathtt{GET\_IA\_INFO}$}};
+
+% drawing node of type ScriptAction in matrix line 21 with attributes: {'annexid': 'ScriptAction-62', 'label': '$\\mathtt{SET\\_IA}$', 'dest': <Party-4>, 'src': <Party-3>, 'data': '$\\mathit{results}$', 'line': 21, 'party': <Party-3>, 'protocol': <Protocol-1>, 'counter': 20, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170040n0'], 'node_name': 'node139709838170040n0'}
+\node[annex_action,name=node139709838170040n0] at (pos-1-21) {\setcounter{protostep}{19}\protostep{ScriptAction-62} \contour{white}{$\mathtt{SET\_IA}$}};
+
+% drawing node of type EndParty in matrix line 22 with attributes: {'annexid': 'EndParty-63', 'party': <Party-3>, 'line': 22, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170096n0'], 'node_name': 'node139709838170096n0'}
+\node[name=node139709838170096n0,annex_end_party_box,] at (pos-1-22) {\faFile\ \url{idp.example/}};
+
+% drawing node of type Action in matrix line 23 with attributes: {'annexid': 'Action-64', 'label': '$\\mathtt{GET\\_OFFER}$', 'party': <Party-4>, 'line': 23, 'protocol': <Protocol-1>, 'counter': 21, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170152n0'], 'node_name': 'node139709838170152n0'}
+\node[annex_action,name=node139709838170152n0] at (pos-2-23) {\setcounter{protostep}{20}\protostep{Action-64} \contour{white}{$\mathtt{GET\_OFFER}$}};
+
+% drawing node of type Serial in matrix line 17 with attributes: {'annexid': 'Serial-32', 'steps': [<OpenWindowStartParty-65>, <HTTPRequest-66>, <HTTPResponse-67>, <ScriptAction-68>, <ScriptAction-69>, <EndParty-70>, <Action-71>], 'line': 17, 'length': 7, 'protocol': <Protocol-1>}
+
+
+% drawing node of type OpenWindowStartParty in matrix line 17 with attributes: {'annexid': 'OpenWindowStartParty-65', 'src': <Party-6>, 'dest': <Party-7>, 'line': 17, 'protocol': <Protocol-1>, 'counter': 22, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170208n0'], 'node_name': 'node139709838170208n0', 'party': <Party-7>, 'end': <EndParty-70>}
+\node[name=node139709838170208n0,annex_start_party_box,] at (pos-5-17) {\faFile\ \url{idp.example/}};
+
+% drawing node of type HTTPRequest in matrix line 18 with attributes: {'annexid': 'HTTPRequest-66', 'src': <Party-7>, 'dest': <Party-8>, 'method': 'GET', 'path': '/.wk/idp-proxy', 'line': 18, 'protocol': <Protocol-1>, 'counter': 23, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-5-18', 'pos-6-18', 'node139709838170264n0'], 'node_name_counter': 1, 'tex_id': '\\setcounter{protostep}{22}\\protostep{HTTPRequest-66} ', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838170264n0){\\setcounter{protostep}{22}\\protostep{HTTPRequest-66} \\contour{white}{GET}}', 'tikz_below': ''}
+
+
+% drawing node of type HTTPResponse in matrix line 19 with attributes: {'annexid': 'HTTPResponse-67', 'reply_to': <HTTPRequest-66>, 'line': 19, 'protocol': <Protocol-1>, 'counter': 24, 'text_above': '', 'text_below': '', 'dest': <Party-7>, 'src': <Party-8>, '_affecting_nodes': ['pos-6-19', 'pos-5-19', 'node139709838170320n0'], 'tex_id': '\\setcounter{protostep}{23}\\protostep{HTTPResponse-67} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838170320n0){\\setcounter{protostep}{23}\\protostep{HTTPResponse-67} }', 'tikz_below': ''}
+
+
+% drawing node of type ScriptAction in matrix line 20 with attributes: {'annexid': 'ScriptAction-68', 'dest': <Party-6>, 'src': <Party-7>, 'label': '$\\mathtt{GET\\_IA\\_INFO}$', 'reversed': True, 'data': '$\\mathit{stuff}$', 'line': 20, 'party': <Party-7>, 'protocol': <Protocol-1>, 'counter': 25, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170376n0'], 'node_name': 'node139709838170376n0'}
+\node[annex_action,name=node139709838170376n0] at (pos-5-20) {\setcounter{protostep}{24}\protostep{ScriptAction-68} \contour{white}{$\mathtt{GET\_IA\_INFO}$}};
+
+% drawing node of type ScriptAction in matrix line 21 with attributes: {'annexid': 'ScriptAction-69', 'label': '$\\mathtt{SET\\_IA}$', 'dest': <Party-6>, 'src': <Party-7>, 'data': '$\\mathit{results}$', 'line': 21, 'party': <Party-7>, 'protocol': <Protocol-1>, 'counter': 26, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170432n0'], 'node_name': 'node139709838170432n0'}
+\node[annex_action,name=node139709838170432n0] at (pos-5-21) {\setcounter{protostep}{25}\protostep{ScriptAction-69} \contour{white}{$\mathtt{SET\_IA}$}};
+
+% drawing node of type EndParty in matrix line 22 with attributes: {'annexid': 'EndParty-70', 'party': <Party-7>, 'line': 22, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170488n0'], 'node_name': 'node139709838170488n0'}
+\node[name=node139709838170488n0,annex_end_party_box,] at (pos-5-22) {\faFile\ \url{idp.example/}};
+
+% drawing node of type Action in matrix line 23 with attributes: {'annexid': 'Action-71', 'label': '$\\mathtt{GET\\_OFFER}$', 'party': <Party-6>, 'line': 23, 'protocol': <Protocol-1>, 'counter': 27, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170544n0'], 'node_name': 'node139709838170544n0'}
+\node[annex_action,name=node139709838170544n0] at (pos-4-23) {\setcounter{protostep}{26}\protostep{Action-71} \contour{white}{$\mathtt{GET\_OFFER}$}};
+
+% drawing node of type Separator in matrix line 24 with attributes: {'annexid': 'Separator-19', 'line': 24, 'protocol': <Protocol-1>}
+
+
+% drawing node of type Comment in matrix line 25 with attributes: {'annexid': 'Comment-20', 'label': 'Establish direct connection:', 'line': 25, 'protocol': <Protocol-1>}
+
+
+% drawing node of type HTTPRequest in matrix line 26 with attributes: {'annexid': 'HTTPRequest-21', 'src': <Party-4>, 'dest': <Party-6>, 'line': 26, 'protocol': <Protocol-1>, 'counter': 28, 'text_above': '', 'text_below': '', '_affecting_nodes': ['pos-2-26', 'pos-4-26', 'node139709838134912n0'], 'tex_id': '\\setcounter{protostep}{27}\\protostep{HTTPRequest-21} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134912n0){\\setcounter{protostep}{27}\\protostep{HTTPRequest-21} }', 'tikz_below': ''}
+
+
+% drawing node of type HTTPRequest in matrix line 27 with attributes: {'annexid': 'HTTPRequest-22', 'dest': <Party-4>, 'src': <Party-6>, 'line': 27, 'protocol': <Protocol-1>, 'counter': 29, 'text_above': '', 'text_below': '', '_affecting_nodes': ['pos-4-27', 'pos-2-27', 'node139709838134968n0'], 'tex_id': '\\setcounter{protostep}{28}\\protostep{HTTPRequest-22} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134968n0){\\setcounter{protostep}{28}\\protostep{HTTPRequest-22} }', 'tikz_below': ''}
+
+
+% drawing node of type Parallel in matrix line 28 with attributes: {'annexid': 'Parallel-23', 'steps': [<EndParty-33>, <EndParty-34>, <EndParty-35>, <EndParty-36>, <EndParty-37>], 'line': 28, 'length': 1, 'protocol': <Protocol-1>}
+
+
+% drawing node of type EndParty in matrix line 28 with attributes: {'annexid': 'EndParty-33', 'party': <Party-4>, 'line': 28, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168416n0'], 'node_name': 'node139709838168416n0'}
+\node[name=node139709838168416n0,annex_end_party_box,] at (pos-2-28) {\faFile\ \url{example.com/}};
+
+% drawing node of type EndParty in matrix line 28 with attributes: {'annexid': 'EndParty-34', 'party': <Party-2>, 'line': 28, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168472n0'], 'node_name': 'node139709838168472n0'}
+\node[name=node139709838168472n0,annex_end_party_box,server] at (pos-0-28) {\faServer\ IdP};
+
+% drawing node of type EndParty in matrix line 28 with attributes: {'annexid': 'EndParty-35', 'party': <Party-5>, 'line': 28, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168528n0'], 'node_name': 'node139709838168528n0'}
+\node[name=node139709838168528n0,annex_end_party_box,server] at (pos-3-28) {\faServer\ example.com};
+
+% drawing node of type EndParty in matrix line 28 with attributes: {'annexid': 'EndParty-36', 'party': <Party-6>, 'line': 28, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168584n0'], 'node_name': 'node139709838168584n0'}
+\node[name=node139709838168584n0,annex_end_party_box,] at (pos-4-28) {\faFile\ \url{example.com/}};
+
+% drawing node of type EndParty in matrix line 28 with attributes: {'annexid': 'EndParty-37', 'party': <Party-8>, 'line': 28, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168640n0'], 'node_name': 'node139709838168640n0'}
+\node[name=node139709838168640n0,annex_end_party_box,server] at (pos-6-28) {\faServer\ IdP};
+
+
+% ARROWS LAYER
+
+\begin{pgfonlayer}{arrows}% drawing node of type Protocol in matrix line 1 with attributes: {'annexid': 'Protocol-1', 'parties': [<Party-2>, <Party-3>, <Party-4>, <Party-5>, <Party-6>, <Party-7>, <Party-8>], 'groups': [<Group-9>, <Group-10>], 'steps': [<Parallel-11>, <Parallel-12>, <HTTPRequest-13>, <HTTPRequest-14>, <Action-15>, <HTTPRequest-16>, <HTTPRequest-17>, <Parallel-18>, <Separator-19>, <Comment-20>, <HTTPRequest-21>, <HTTPRequest-22>, <Parallel-23>], 'options': {'colsep': '0.15\\textwidth', 'rowsep': '1ex', 'enumerate': '\\setcounter{protostep}{%d}\\protostep{%s} ', 'styles': [<annexlang.styles.StyleDefault object at 0x7f10bb4a7ac8>, <annexlang.styles.StyleCustom object at 0x7f10bb4a77f0>]}, 'line': 1, 'length': 28, 'protocol': <Protocol-1>}
+
+
+% drawing node of type Parallel in matrix line 1 with attributes: {'annexid': 'Parallel-11', 'steps': [<StartParty-24>, <StartParty-25>, <StartParty-26>, <StartParty-27>, <StartParty-28>], 'line': 1, 'length': 1, 'protocol': <Protocol-1>}
+
+
+% drawing node of type StartParty in matrix line 1 with attributes: {'annexid': 'StartParty-24', 'party': <Party-4>, 'line': 1, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838135080n0'], 'node_name': 'node139709838135080n0', 'end': <EndParty-33>}
+\draw[annex_lifeline] (pos-2-1) -- (pos-2-28);
+
+% drawing node of type StartParty in matrix line 1 with attributes: {'annexid': 'StartParty-25', 'party': <Party-2>, 'line': 1, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838135136n0'], 'node_name': 'node139709838135136n0', 'end': <EndParty-34>}
+\draw[annex_lifeline] (pos-0-1) -- (pos-0-28);
+
+% drawing node of type StartParty in matrix line 1 with attributes: {'annexid': 'StartParty-26', 'party': <Party-5>, 'line': 1, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838135192n0'], 'node_name': 'node139709838135192n0', 'end': <EndParty-35>}
+\draw[annex_lifeline] (pos-3-1) -- (pos-3-28);
+
+% drawing node of type StartParty in matrix line 1 with attributes: {'annexid': 'StartParty-27', 'party': <Party-6>, 'line': 1, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838135248n0'], 'node_name': 'node139709838135248n0', 'end': <EndParty-36>}
+\draw[annex_lifeline] (pos-4-1) -- (pos-4-28);
+
+% drawing node of type StartParty in matrix line 1 with attributes: {'annexid': 'StartParty-28', 'party': <Party-8>, 'line': 1, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168136n0'], 'node_name': 'node139709838168136n0', 'end': <EndParty-37>}
+\draw[annex_lifeline] (pos-6-1) -- (pos-6-28);
+
+% drawing node of type Parallel in matrix line 2 with attributes: {'annexid': 'Parallel-12', 'steps': [<Serial-29>, <Serial-30>], 'line': 2, 'length': 10, 'protocol': <Protocol-1>}
+
+
+% drawing node of type Serial in matrix line 2 with attributes: {'annexid': 'Serial-29', 'steps': [<HTTPRequest-38>, <HTTPResponse-39>, <Action-40>, <OpenWindowStartParty-41>, <HTTPRequest-42>, <HTTPResponse-43>, <ScriptAction-44>, <ScriptAction-45>, <EndParty-46>, <Action-47>], 'line': 2, 'length': 10, 'protocol': <Protocol-1>}
+
+
+% drawing node of type HTTPRequest in matrix line 2 with attributes: {'annexid': 'HTTPRequest-38', 'src': <Party-4>, 'dest': <Party-5>, 'method': 'GET', 'line': 2, 'protocol': <Protocol-1>, 'counter': 1, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-2-2', 'pos-3-2', 'node139709838168696n0'], 'node_name_counter': 1, 'tex_id': '\\setcounter{protostep}{0}\\protostep{HTTPRequest-38} ', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168696n0){\\setcounter{protostep}{0}\\protostep{HTTPRequest-38} \\contour{white}{GET}}', 'tikz_below': ''}
+%% draw http request
+        \draw[annex_http_request] (pos-2-2) to node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168696n0){\setcounter{protostep}{0}\protostep{HTTPRequest-38} \contour{white}{GET}}  (pos-3-2);
+
+% drawing node of type HTTPResponse in matrix line 3 with attributes: {'annexid': 'HTTPResponse-39', 'reply_to': <HTTPRequest-38>, 'line': 3, 'protocol': <Protocol-1>, 'counter': 2, 'text_above': '', 'text_below': '', 'dest': <Party-4>, 'src': <Party-5>, '_affecting_nodes': ['pos-3-3', 'pos-2-3', 'node139709838168752n0'], 'tex_id': '\\setcounter{protostep}{1}\\protostep{HTTPResponse-39} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168752n0){\\setcounter{protostep}{1}\\protostep{HTTPResponse-39} }', 'tikz_below': ''}
+%% draw http response
+        \draw[annex_http_response] (pos-3-3) to node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168752n0){\setcounter{protostep}{1}\protostep{HTTPResponse-39} }  (pos-2-3);
+
+% drawing node of type Action in matrix line 4 with attributes: {'annexid': 'Action-40', 'label': '$\\mathtt{CREATE\\_PEER\\_CONNECTION}$', 'party': <Party-4>, 'line': 4, 'protocol': <Protocol-1>, 'counter': 3, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168808n0'], 'node_name': 'node139709838168808n0', 'tex_id': '\\setcounter{protostep}{2}\\protostep{Action-40} '}
+
+
+% drawing node of type OpenWindowStartParty in matrix line 5 with attributes: {'annexid': 'OpenWindowStartParty-41', 'src': <Party-4>, 'dest': <Party-3>, 'line': 5, 'protocol': <Protocol-1>, 'counter': 4, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168864n0'], 'node_name': 'node139709838168864n0', 'party': <Party-3>, 'end': <EndParty-46>}
+%% draw open window arrow
+        \draw[annex_open_window_start_party_arrow] (pos-2-5) to  node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168864n1){\setcounter{protostep}{3}\protostep{OpenWindowStartParty-41} \contour{white}{open}} (node139709838168864n0.east);\draw[annex_lifeline] (pos-1-5) -- (pos-1-10);
+
+% drawing node of type HTTPRequest in matrix line 6 with attributes: {'annexid': 'HTTPRequest-42', 'src': <Party-3>, 'dest': <Party-2>, 'method': 'GET', 'path': '/.wk/idp-proxy', 'line': 6, 'protocol': <Protocol-1>, 'counter': 5, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-1-6', 'pos-0-6', 'node139709838168920n0'], 'node_name_counter': 1, 'tex_id': '\\setcounter{protostep}{4}\\protostep{HTTPRequest-42} ', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168920n0){\\setcounter{protostep}{4}\\protostep{HTTPRequest-42} \\contour{white}{GET}}', 'tikz_below': ''}
+%% draw http request
+        \draw[annex_http_request] (pos-1-6) to node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168920n0){\setcounter{protostep}{4}\protostep{HTTPRequest-42} \contour{white}{GET}}  (pos-0-6);
+
+% drawing node of type HTTPResponse in matrix line 7 with attributes: {'annexid': 'HTTPResponse-43', 'reply_to': <HTTPRequest-42>, 'line': 7, 'protocol': <Protocol-1>, 'counter': 6, 'text_above': '', 'text_below': '', 'dest': <Party-3>, 'src': <Party-2>, '_affecting_nodes': ['pos-0-7', 'pos-1-7', 'node139709838168976n0'], 'tex_id': '\\setcounter{protostep}{5}\\protostep{HTTPResponse-43} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168976n0){\\setcounter{protostep}{5}\\protostep{HTTPResponse-43} }', 'tikz_below': ''}
+%% draw http response
+        \draw[annex_http_response] (pos-0-7) to node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168976n0){\setcounter{protostep}{5}\protostep{HTTPResponse-43} }  (pos-1-7);
+
+% drawing node of type ScriptAction in matrix line 8 with attributes: {'annexid': 'ScriptAction-44', 'dest': <Party-4>, 'src': <Party-3>, 'label': '$\\mathtt{GET\\_IA\\_INFO}$', 'reversed': True, 'data': '$\\mathit{stuff}$', 'line': 8, 'party': <Party-3>, 'protocol': <Protocol-1>, 'counter': 7, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169032n0'], 'node_name': 'node139709838169032n0', 'tex_id': '\\setcounter{protostep}{6}\\protostep{ScriptAction-44} '}
+%% draw open window arrow
+        \draw[annex_script_action_arrow_reversed] (node139709838169032n0.east) to  node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169032n1){\contour{white}{$\mathit{stuff}$}} (pos-2-8);
+
+% drawing node of type ScriptAction in matrix line 9 with attributes: {'annexid': 'ScriptAction-45', 'label': '$\\mathtt{SET\\_IA}$', 'dest': <Party-4>, 'src': <Party-3>, 'data': '$\\mathit{results}$', 'line': 9, 'party': <Party-3>, 'protocol': <Protocol-1>, 'counter': 8, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169088n0'], 'node_name': 'node139709838169088n0', 'tex_id': '\\setcounter{protostep}{7}\\protostep{ScriptAction-45} '}
+%% draw open window arrow
+        \draw[annex_script_action_arrow] (node139709838169088n0.east) to  node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169088n1){\contour{white}{$\mathit{results}$}} (pos-2-9);
+
+% drawing node of type EndParty in matrix line 10 with attributes: {'annexid': 'EndParty-46', 'party': <Party-3>, 'line': 10, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169144n0'], 'node_name': 'node139709838169144n0'}
+
+
+% drawing node of type Action in matrix line 11 with attributes: {'annexid': 'Action-47', 'label': '$\\mathtt{GET\\_OFFERdd}$', 'party': <Party-4>, 'line': 11, 'protocol': <Protocol-1>, 'counter': 9, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169200n0'], 'node_name': 'node139709838169200n0', 'tex_id': '\\setcounter{protostep}{8}\\protostep{Action-47} '}
+
+
+% drawing node of type Serial in matrix line 2 with attributes: {'annexid': 'Serial-30', 'condense': 'west', 'steps': [<HTTPRequest-48>, <HTTPResponse-49>, <Action-50>, <OpenWindowStartParty-51>, <HTTPRequest-52>, <HTTPResponse-53>, <ScriptAction-54>, <ScriptAction-55>, <EndParty-56>, <Action-57>], 'line': 2, 'length': 10, 'skip_number': False, 'protocol': <Protocol-1>, 'counter': 10}
+
+
+% drawing node of type HTTPRequest in matrix line 2 with attributes: {'annexid': 'HTTPRequest-48', 'src': <Party-6>, 'dest': <Party-5>, 'method': 'GET', 'line': 2, 'protocol': <Protocol-1>, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-4-2', 'pos-3-2', 'node139709838169256n0'], 'node_name_counter': 1, 'tex_id': '', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169256n0){\\contour{white}{GET}}', 'tikz_below': ''}
+%% draw http request
+        \draw[annex_http_request] (pos-4-2) to node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169256n0){\contour{white}{GET}}  (pos-3-2);
+
+% drawing node of type HTTPResponse in matrix line 3 with attributes: {'annexid': 'HTTPResponse-49', 'reply_to': <HTTPRequest-48>, 'line': 3, 'protocol': <Protocol-1>, 'text_above': '', 'text_below': '', 'dest': <Party-6>, 'src': <Party-5>, '_affecting_nodes': ['pos-3-3', 'pos-4-3'], 'tex_id': '', 'tikz_above': '', 'tikz_below': ''}
+%% draw http response
+        \draw[annex_http_response] (pos-3-3) to   (pos-4-3);
+
+% drawing node of type Action in matrix line 4 with attributes: {'annexid': 'Action-50', 'label': '$\\mathtt{CREATE\\_PEER\\_CONNECTION}$', 'party': <Party-6>, 'line': 4, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169368n0'], 'node_name': 'node139709838169368n0', 'tex_id': ''}
+
+
+% drawing node of type OpenWindowStartParty in matrix line 5 with attributes: {'annexid': 'OpenWindowStartParty-51', 'src': <Party-6>, 'dest': <Party-7>, 'line': 5, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169424n0'], 'node_name': 'node139709838169424n0', 'party': <Party-7>, 'end': <EndParty-56>}
+%% draw open window arrow
+        \draw[annex_open_window_start_party_arrow] (pos-4-5) to  node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169424n1){\contour{white}{open}} (node139709838169424n0.west);\draw[annex_lifeline] (pos-5-5) -- (pos-5-10);
+
+% drawing node of type HTTPRequest in matrix line 6 with attributes: {'annexid': 'HTTPRequest-52', 'src': <Party-7>, 'dest': <Party-8>, 'method': 'GET', 'path': '/.wk/idp-proxy', 'line': 6, 'protocol': <Protocol-1>, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-5-6', 'pos-6-6', 'node139709838169480n0'], 'node_name_counter': 1, 'tex_id': '', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169480n0){\\contour{white}{GET}}', 'tikz_below': ''}
+%% draw http request
+        \draw[annex_http_request] (pos-5-6) to node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169480n0){\contour{white}{GET}}  (pos-6-6);
+
+% drawing node of type HTTPResponse in matrix line 7 with attributes: {'annexid': 'HTTPResponse-53', 'reply_to': <HTTPRequest-52>, 'line': 7, 'protocol': <Protocol-1>, 'text_above': '', 'text_below': '', 'dest': <Party-7>, 'src': <Party-8>, '_affecting_nodes': ['pos-6-7', 'pos-5-7'], 'tex_id': '', 'tikz_above': '', 'tikz_below': ''}
+%% draw http response
+        \draw[annex_http_response] (pos-6-7) to   (pos-5-7);
+
+% drawing node of type ScriptAction in matrix line 8 with attributes: {'annexid': 'ScriptAction-54', 'dest': <Party-7>, 'src': <Party-6>, 'label': '$\\mathtt{GET\\_IA\\_INFO}$', 'line': 8, 'party': <Party-6>, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169592n0'], 'node_name': 'node139709838169592n0', 'tex_id': ''}
+%% draw open window arrow
+        \draw[annex_script_action_arrow] (node139709838169592n0.east) to   (pos-5-8);
+
+% drawing node of type ScriptAction in matrix line 9 with attributes: {'annexid': 'ScriptAction-55', 'label': '$\\mathtt{SET\\_IA}$', 'dest': <Party-6>, 'src': <Party-7>, 'line': 9, 'party': <Party-7>, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169648n0'], 'node_name': 'node139709838169648n0', 'tex_id': ''}
+%% draw open window arrow
+        \draw[annex_script_action_arrow] (node139709838169648n0.west) to   (pos-4-9);
+
+% drawing node of type EndParty in matrix line 10 with attributes: {'annexid': 'EndParty-56', 'party': <Party-7>, 'line': 10, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169704n0'], 'node_name': 'node139709838169704n0'}
+
+
+% drawing node of type Action in matrix line 11 with attributes: {'annexid': 'Action-57', 'label': '$\\mathtt{GET\\_OFFERxx}$', 'party': <Party-6>, 'line': 11, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169760n0'], 'node_name': 'node139709838169760n0', 'tex_id': ''}
+
+
+% drawing node of type HTTPRequest in matrix line 12 with attributes: {'annexid': 'HTTPRequest-13', 'src': <Party-4>, 'dest': <Party-5>, 'parameters': '$\\mathit{offer}$', 'line': 12, 'protocol': <Protocol-1>, 'counter': 11, 'text_above': '', 'text_below': '$\\mathit{offer}$', '_affecting_nodes': ['pos-2-12', 'pos-3-12', 'node139709838134520n0', 'node139709838134520n1'], 'tex_id': '\\setcounter{protostep}{10}\\protostep{HTTPRequest-13} ', 'node_name_counter': 2, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134520n0){\\setcounter{protostep}{10}\\protostep{HTTPRequest-13} }', 'tikz_below': 'node [annex_arrow_text,below=8pt,anchor=base](node139709838134520n1){\\contour{white}{$\\mathit{offer}$}}'}
+%% draw http request
+        \draw[annex_http_request] (pos-2-12) to node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134520n0){\setcounter{protostep}{10}\protostep{HTTPRequest-13} } node [annex_arrow_text,below=8pt,anchor=base](node139709838134520n1){\contour{white}{$\mathit{offer}$}} (pos-3-12);
+
+% drawing node of type HTTPRequest in matrix line 13 with attributes: {'annexid': 'HTTPRequest-14', 'src': <Party-5>, 'dest': <Party-6>, 'parameters': '$\\mathit{offer}$', 'line': 13, 'protocol': <Protocol-1>, 'counter': 12, 'text_above': '', 'text_below': '$\\mathit{offer}$', '_affecting_nodes': ['pos-3-13', 'pos-4-13', 'node139709838133792n0', 'node139709838133792n1'], 'tex_id': '\\setcounter{protostep}{11}\\protostep{HTTPRequest-14} ', 'node_name_counter': 2, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838133792n0){\\setcounter{protostep}{11}\\protostep{HTTPRequest-14} }', 'tikz_below': 'node [annex_arrow_text,below=8pt,anchor=base](node139709838133792n1){\\contour{white}{$\\mathit{offer}$}}'}
+%% draw http request
+        \draw[annex_http_request] (pos-3-13) to node [annex_arrow_text,above=2.6pt,anchor=base](node139709838133792n0){\setcounter{protostep}{11}\protostep{HTTPRequest-14} } node [annex_arrow_text,below=8pt,anchor=base](node139709838133792n1){\contour{white}{$\mathit{offer}$}} (pos-4-13);
+
+% drawing node of type Action in matrix line 14 with attributes: {'annexid': 'Action-15', 'label': '$\\mathtt{GET\\_OFFER\\_SET\\_ANSWER}$', 'party': <Party-6>, 'line': 14, 'protocol': <Protocol-1>, 'counter': 13, 'node_name_counter': 1, '_affecting_nodes': ['node139709838134576n0'], 'node_name': 'node139709838134576n0', 'tex_id': '\\setcounter{protostep}{12}\\protostep{Action-15} '}
+
+
+% drawing node of type HTTPRequest in matrix line 15 with attributes: {'annexid': 'HTTPRequest-16', 'src': <Party-6>, 'dest': <Party-5>, 'parameters': '$\\mathit{answer}$', 'line': 15, 'protocol': <Protocol-1>, 'counter': 14, 'text_above': '', 'text_below': '$\\mathit{answer}$', '_affecting_nodes': ['pos-4-15', 'pos-3-15', 'node139709838134632n0', 'node139709838134632n1'], 'tex_id': '\\setcounter{protostep}{13}\\protostep{HTTPRequest-16} ', 'node_name_counter': 2, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134632n0){\\setcounter{protostep}{13}\\protostep{HTTPRequest-16} }', 'tikz_below': 'node [annex_arrow_text,below=8pt,anchor=base](node139709838134632n1){\\contour{white}{$\\mathit{answer}$}}'}
+%% draw http request
+        \draw[annex_http_request] (pos-4-15) to node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134632n0){\setcounter{protostep}{13}\protostep{HTTPRequest-16} } node [annex_arrow_text,below=8pt,anchor=base](node139709838134632n1){\contour{white}{$\mathit{answer}$}} (pos-3-15);
+
+% drawing node of type HTTPRequest in matrix line 16 with attributes: {'annexid': 'HTTPRequest-17', 'src': <Party-5>, 'dest': <Party-4>, 'parameters': '$\\mathit{answer}$', 'line': 16, 'protocol': <Protocol-1>, 'counter': 15, 'text_above': '', 'text_below': '$\\mathit{answer}$', '_affecting_nodes': ['pos-3-16', 'pos-2-16', 'node139709838134688n0', 'node139709838134688n1'], 'tex_id': '\\setcounter{protostep}{14}\\protostep{HTTPRequest-17} ', 'node_name_counter': 2, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134688n0){\\setcounter{protostep}{14}\\protostep{HTTPRequest-17} }', 'tikz_below': 'node [annex_arrow_text,below=8pt,anchor=base](node139709838134688n1){\\contour{white}{$\\mathit{answer}$}}'}
+%% draw http request
+        \draw[annex_http_request] (pos-3-16) to node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134688n0){\setcounter{protostep}{14}\protostep{HTTPRequest-17} } node [annex_arrow_text,below=8pt,anchor=base](node139709838134688n1){\contour{white}{$\mathit{answer}$}} (pos-2-16);
+
+% drawing node of type Parallel in matrix line 17 with attributes: {'annexid': 'Parallel-18', 'steps': [<Serial-31>, <Serial-32>], 'line': 17, 'length': 7, 'protocol': <Protocol-1>}
+
+
+% drawing node of type Serial in matrix line 17 with attributes: {'annexid': 'Serial-31', 'steps': [<OpenWindowStartParty-58>, <HTTPRequest-59>, <HTTPResponse-60>, <ScriptAction-61>, <ScriptAction-62>, <EndParty-63>, <Action-64>], 'line': 17, 'length': 7, 'protocol': <Protocol-1>}
+
+
+% drawing node of type OpenWindowStartParty in matrix line 17 with attributes: {'annexid': 'OpenWindowStartParty-58', 'src': <Party-4>, 'dest': <Party-3>, 'line': 17, 'protocol': <Protocol-1>, 'counter': 16, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169816n0'], 'node_name': 'node139709838169816n0', 'party': <Party-3>, 'end': <EndParty-63>}
+%% draw open window arrow
+        \draw[annex_open_window_start_party_arrow] (pos-2-17) to  node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169816n1){\setcounter{protostep}{15}\protostep{OpenWindowStartParty-58} \contour{white}{open}} (node139709838169816n0.east);\draw[annex_lifeline] (pos-1-17) -- (pos-1-22);
+
+% drawing node of type HTTPRequest in matrix line 18 with attributes: {'annexid': 'HTTPRequest-59', 'src': <Party-3>, 'dest': <Party-2>, 'method': 'GET', 'path': '/.wk/idp-proxy', 'line': 18, 'protocol': <Protocol-1>, 'counter': 17, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-1-18', 'pos-0-18', 'node139709838169872n0'], 'node_name_counter': 1, 'tex_id': '\\setcounter{protostep}{16}\\protostep{HTTPRequest-59} ', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169872n0){\\setcounter{protostep}{16}\\protostep{HTTPRequest-59} \\contour{white}{GET}}', 'tikz_below': ''}
+%% draw http request
+        \draw[annex_http_request] (pos-1-18) to node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169872n0){\setcounter{protostep}{16}\protostep{HTTPRequest-59} \contour{white}{GET}}  (pos-0-18);
+
+% drawing node of type HTTPResponse in matrix line 19 with attributes: {'annexid': 'HTTPResponse-60', 'reply_to': <HTTPRequest-59>, 'line': 19, 'protocol': <Protocol-1>, 'counter': 18, 'text_above': '', 'text_below': '', 'dest': <Party-3>, 'src': <Party-2>, '_affecting_nodes': ['pos-0-19', 'pos-1-19', 'node139709838169928n0'], 'tex_id': '\\setcounter{protostep}{17}\\protostep{HTTPResponse-60} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169928n0){\\setcounter{protostep}{17}\\protostep{HTTPResponse-60} }', 'tikz_below': ''}
+%% draw http response
+        \draw[annex_http_response] (pos-0-19) to node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169928n0){\setcounter{protostep}{17}\protostep{HTTPResponse-60} }  (pos-1-19);
+
+% drawing node of type ScriptAction in matrix line 20 with attributes: {'annexid': 'ScriptAction-61', 'dest': <Party-4>, 'src': <Party-3>, 'label': '$\\mathtt{GET\\_IA\\_INFO}$', 'reversed': True, 'data': '$\\mathit{stuff}$', 'line': 20, 'party': <Party-3>, 'protocol': <Protocol-1>, 'counter': 19, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169984n0'], 'node_name': 'node139709838169984n0', 'tex_id': '\\setcounter{protostep}{18}\\protostep{ScriptAction-61} '}
+%% draw open window arrow
+        \draw[annex_script_action_arrow_reversed] (node139709838169984n0.east) to  node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169984n1){\contour{white}{$\mathit{stuff}$}} (pos-2-20);
+
+% drawing node of type ScriptAction in matrix line 21 with attributes: {'annexid': 'ScriptAction-62', 'label': '$\\mathtt{SET\\_IA}$', 'dest': <Party-4>, 'src': <Party-3>, 'data': '$\\mathit{results}$', 'line': 21, 'party': <Party-3>, 'protocol': <Protocol-1>, 'counter': 20, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170040n0'], 'node_name': 'node139709838170040n0', 'tex_id': '\\setcounter{protostep}{19}\\protostep{ScriptAction-62} '}
+%% draw open window arrow
+        \draw[annex_script_action_arrow] (node139709838170040n0.east) to  node [annex_arrow_text,above=2.6pt,anchor=base](node139709838170040n1){\contour{white}{$\mathit{results}$}} (pos-2-21);
+
+% drawing node of type EndParty in matrix line 22 with attributes: {'annexid': 'EndParty-63', 'party': <Party-3>, 'line': 22, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170096n0'], 'node_name': 'node139709838170096n0'}
+
+
+% drawing node of type Action in matrix line 23 with attributes: {'annexid': 'Action-64', 'label': '$\\mathtt{GET\\_OFFER}$', 'party': <Party-4>, 'line': 23, 'protocol': <Protocol-1>, 'counter': 21, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170152n0'], 'node_name': 'node139709838170152n0', 'tex_id': '\\setcounter{protostep}{20}\\protostep{Action-64} '}
+
+
+% drawing node of type Serial in matrix line 17 with attributes: {'annexid': 'Serial-32', 'steps': [<OpenWindowStartParty-65>, <HTTPRequest-66>, <HTTPResponse-67>, <ScriptAction-68>, <ScriptAction-69>, <EndParty-70>, <Action-71>], 'line': 17, 'length': 7, 'protocol': <Protocol-1>}
+
+
+% drawing node of type OpenWindowStartParty in matrix line 17 with attributes: {'annexid': 'OpenWindowStartParty-65', 'src': <Party-6>, 'dest': <Party-7>, 'line': 17, 'protocol': <Protocol-1>, 'counter': 22, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170208n0'], 'node_name': 'node139709838170208n0', 'party': <Party-7>, 'end': <EndParty-70>}
+%% draw open window arrow
+        \draw[annex_open_window_start_party_arrow] (pos-4-17) to  node [annex_arrow_text,above=2.6pt,anchor=base](node139709838170208n1){\setcounter{protostep}{21}\protostep{OpenWindowStartParty-65} \contour{white}{open}} (node139709838170208n0.west);\draw[annex_lifeline] (pos-5-17) -- (pos-5-22);
+
+% drawing node of type HTTPRequest in matrix line 18 with attributes: {'annexid': 'HTTPRequest-66', 'src': <Party-7>, 'dest': <Party-8>, 'method': 'GET', 'path': '/.wk/idp-proxy', 'line': 18, 'protocol': <Protocol-1>, 'counter': 23, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-5-18', 'pos-6-18', 'node139709838170264n0'], 'node_name_counter': 1, 'tex_id': '\\setcounter{protostep}{22}\\protostep{HTTPRequest-66} ', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838170264n0){\\setcounter{protostep}{22}\\protostep{HTTPRequest-66} \\contour{white}{GET}}', 'tikz_below': ''}
+%% draw http request
+        \draw[annex_http_request] (pos-5-18) to node [annex_arrow_text,above=2.6pt,anchor=base](node139709838170264n0){\setcounter{protostep}{22}\protostep{HTTPRequest-66} \contour{white}{GET}}  (pos-6-18);
+
+% drawing node of type HTTPResponse in matrix line 19 with attributes: {'annexid': 'HTTPResponse-67', 'reply_to': <HTTPRequest-66>, 'line': 19, 'protocol': <Protocol-1>, 'counter': 24, 'text_above': '', 'text_below': '', 'dest': <Party-7>, 'src': <Party-8>, '_affecting_nodes': ['pos-6-19', 'pos-5-19', 'node139709838170320n0'], 'tex_id': '\\setcounter{protostep}{23}\\protostep{HTTPResponse-67} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838170320n0){\\setcounter{protostep}{23}\\protostep{HTTPResponse-67} }', 'tikz_below': ''}
+%% draw http response
+        \draw[annex_http_response] (pos-6-19) to node [annex_arrow_text,above=2.6pt,anchor=base](node139709838170320n0){\setcounter{protostep}{23}\protostep{HTTPResponse-67} }  (pos-5-19);
+
+% drawing node of type ScriptAction in matrix line 20 with attributes: {'annexid': 'ScriptAction-68', 'dest': <Party-6>, 'src': <Party-7>, 'label': '$\\mathtt{GET\\_IA\\_INFO}$', 'reversed': True, 'data': '$\\mathit{stuff}$', 'line': 20, 'party': <Party-7>, 'protocol': <Protocol-1>, 'counter': 25, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170376n0'], 'node_name': 'node139709838170376n0', 'tex_id': '\\setcounter{protostep}{24}\\protostep{ScriptAction-68} '}
+%% draw open window arrow
+        \draw[annex_script_action_arrow_reversed] (node139709838170376n0.west) to  node [annex_arrow_text,above=2.6pt,anchor=base](node139709838170376n1){\contour{white}{$\mathit{stuff}$}} (pos-4-20);
+
+% drawing node of type ScriptAction in matrix line 21 with attributes: {'annexid': 'ScriptAction-69', 'label': '$\\mathtt{SET\\_IA}$', 'dest': <Party-6>, 'src': <Party-7>, 'data': '$\\mathit{results}$', 'line': 21, 'party': <Party-7>, 'protocol': <Protocol-1>, 'counter': 26, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170432n0'], 'node_name': 'node139709838170432n0', 'tex_id': '\\setcounter{protostep}{25}\\protostep{ScriptAction-69} '}
+%% draw open window arrow
+        \draw[annex_script_action_arrow] (node139709838170432n0.west) to  node [annex_arrow_text,above=2.6pt,anchor=base](node139709838170432n1){\contour{white}{$\mathit{results}$}} (pos-4-21);
+
+% drawing node of type EndParty in matrix line 22 with attributes: {'annexid': 'EndParty-70', 'party': <Party-7>, 'line': 22, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170488n0'], 'node_name': 'node139709838170488n0'}
+
+
+% drawing node of type Action in matrix line 23 with attributes: {'annexid': 'Action-71', 'label': '$\\mathtt{GET\\_OFFER}$', 'party': <Party-6>, 'line': 23, 'protocol': <Protocol-1>, 'counter': 27, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170544n0'], 'node_name': 'node139709838170544n0', 'tex_id': '\\setcounter{protostep}{26}\\protostep{Action-71} '}
+
+
+% drawing node of type Separator in matrix line 24 with attributes: {'annexid': 'Separator-19', 'line': 24, 'protocol': <Protocol-1>}
+%% draw separator line
+        \draw[annex_separator] (pos-0-24) to  (pos-6-24);
+
+% drawing node of type Comment in matrix line 25 with attributes: {'annexid': 'Comment-20', 'label': 'Establish direct connection:', 'line': 25, 'protocol': <Protocol-1>}
+%% draw comment
+        \draw[draw=none] (pos-0-25) to node [annex_arrow_text,below=8pt,anchor=base](node139709838134856n0){\contour{white}{Establish direct connection:}} (pos-6-25);
+
+% drawing node of type HTTPRequest in matrix line 26 with attributes: {'annexid': 'HTTPRequest-21', 'src': <Party-4>, 'dest': <Party-6>, 'line': 26, 'protocol': <Protocol-1>, 'counter': 28, 'text_above': '', 'text_below': '', '_affecting_nodes': ['pos-2-26', 'pos-4-26', 'node139709838134912n0'], 'tex_id': '\\setcounter{protostep}{27}\\protostep{HTTPRequest-21} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134912n0){\\setcounter{protostep}{27}\\protostep{HTTPRequest-21} }', 'tikz_below': ''}
+%% draw http request
+        \draw[annex_http_request] (pos-2-26) to node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134912n0){\setcounter{protostep}{27}\protostep{HTTPRequest-21} }  (pos-4-26);
+
+% drawing node of type HTTPRequest in matrix line 27 with attributes: {'annexid': 'HTTPRequest-22', 'dest': <Party-4>, 'src': <Party-6>, 'line': 27, 'protocol': <Protocol-1>, 'counter': 29, 'text_above': '', 'text_below': '', '_affecting_nodes': ['pos-4-27', 'pos-2-27', 'node139709838134968n0'], 'tex_id': '\\setcounter{protostep}{28}\\protostep{HTTPRequest-22} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134968n0){\\setcounter{protostep}{28}\\protostep{HTTPRequest-22} }', 'tikz_below': ''}
+%% draw http request
+        \draw[annex_http_request] (pos-4-27) to node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134968n0){\setcounter{protostep}{28}\protostep{HTTPRequest-22} }  (pos-2-27);
+
+% drawing node of type Parallel in matrix line 28 with attributes: {'annexid': 'Parallel-23', 'steps': [<EndParty-33>, <EndParty-34>, <EndParty-35>, <EndParty-36>, <EndParty-37>], 'line': 28, 'length': 1, 'protocol': <Protocol-1>}
+
+
+% drawing node of type EndParty in matrix line 28 with attributes: {'annexid': 'EndParty-33', 'party': <Party-4>, 'line': 28, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168416n0'], 'node_name': 'node139709838168416n0'}
+
+
+% drawing node of type EndParty in matrix line 28 with attributes: {'annexid': 'EndParty-34', 'party': <Party-2>, 'line': 28, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168472n0'], 'node_name': 'node139709838168472n0'}
+
+
+% drawing node of type EndParty in matrix line 28 with attributes: {'annexid': 'EndParty-35', 'party': <Party-5>, 'line': 28, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168528n0'], 'node_name': 'node139709838168528n0'}
+
+
+% drawing node of type EndParty in matrix line 28 with attributes: {'annexid': 'EndParty-36', 'party': <Party-6>, 'line': 28, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168584n0'], 'node_name': 'node139709838168584n0'}
+
+
+% drawing node of type EndParty in matrix line 28 with attributes: {'annexid': 'EndParty-37', 'party': <Party-8>, 'line': 28, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168640n0'], 'node_name': 'node139709838168640n0'}
+
+
+\end{pgfonlayer}
+% GROUPS LAYER
+
+\begin{pgfonlayer}{groups}% drawing group \faFirefox\ Browser A
+\node[annex_group_box,fit=(pos-1-0)(node139709838168864n0)(node139709838169032n0)(node139709838169032n0)(node139709838169088n0)(node139709838169088n0)(node139709838169144n0)(node139709838169816n0)(node139709838169984n0)(node139709838169984n0)(node139709838170040n0)(node139709838170040n0)(node139709838170096n0)(node139709838135080n0)(node139709838168808n0)(node139709838168864n0)(node139709838169032n0)(node139709838169088n0)(node139709838169200n0)(node139709838169816n0)(node139709838169984n0)(node139709838170040n0)(node139709838170152n0)(node139709838168416n0)](group139709838131440) {}; \node[anchor=base,above=of group139709838131440.north,above=-2.5ex,anchor=base] {\faFirefox\ Browser A};
+
+% drawing group \faChrome\ Browser B
+\node[annex_group_box,fit=(pos-4-0)(node139709838135248n0)(node139709838169368n0)(node139709838169424n0)(node139709838169592n0)(node139709838169592n0)(node139709838169648n0)(node139709838169760n0)(node139709838134576n0)(node139709838170208n0)(node139709838170376n0)(node139709838170432n0)(node139709838170544n0)(node139709838168584n0)(node139709838169424n0)(node139709838169592n0)(node139709838169648n0)(node139709838169648n0)(node139709838169704n0)(node139709838170208n0)(node139709838170376n0)(node139709838170376n0)(node139709838170432n0)(node139709838170432n0)(node139709838170488n0)](group139709838132056) {}; \node[anchor=base,above=of group139709838132056.north,above=-2.5ex,anchor=base] {\faChrome\ Browser B};
+
+\end{pgfonlayer}
+% MARKERS LAYER
+
+\begin{pgfonlayer}{markers}% drawing node of type Protocol in matrix line 1 with attributes: {'annexid': 'Protocol-1', 'parties': [<Party-2>, <Party-3>, <Party-4>, <Party-5>, <Party-6>, <Party-7>, <Party-8>], 'groups': [<Group-9>, <Group-10>], 'steps': [<Parallel-11>, <Parallel-12>, <HTTPRequest-13>, <HTTPRequest-14>, <Action-15>, <HTTPRequest-16>, <HTTPRequest-17>, <Parallel-18>, <Separator-19>, <Comment-20>, <HTTPRequest-21>, <HTTPRequest-22>, <Parallel-23>], 'options': {'colsep': '0.15\\textwidth', 'rowsep': '1ex', 'enumerate': '\\setcounter{protostep}{%d}\\protostep{%s} ', 'styles': [<annexlang.styles.StyleDefault object at 0x7f10bb4a7ac8>, <annexlang.styles.StyleCustom object at 0x7f10bb4a77f0>]}, 'line': 1, 'length': 28, 'protocol': <Protocol-1>}
+
+
+% drawing node of type Parallel in matrix line 1 with attributes: {'annexid': 'Parallel-11', 'steps': [<StartParty-24>, <StartParty-25>, <StartParty-26>, <StartParty-27>, <StartParty-28>], 'line': 1, 'length': 1, 'protocol': <Protocol-1>}
+
+
+% drawing node of type StartParty in matrix line 1 with attributes: {'annexid': 'StartParty-24', 'party': <Party-4>, 'line': 1, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838135080n0'], 'node_name': 'node139709838135080n0', 'end': <EndParty-33>}
+
+
+% drawing node of type StartParty in matrix line 1 with attributes: {'annexid': 'StartParty-25', 'party': <Party-2>, 'line': 1, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838135136n0'], 'node_name': 'node139709838135136n0', 'end': <EndParty-34>}
+
+
+% drawing node of type StartParty in matrix line 1 with attributes: {'annexid': 'StartParty-26', 'party': <Party-5>, 'line': 1, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838135192n0'], 'node_name': 'node139709838135192n0', 'end': <EndParty-35>}
+
+
+% drawing node of type StartParty in matrix line 1 with attributes: {'annexid': 'StartParty-27', 'party': <Party-6>, 'line': 1, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838135248n0'], 'node_name': 'node139709838135248n0', 'end': <EndParty-36>}
+
+
+% drawing node of type StartParty in matrix line 1 with attributes: {'annexid': 'StartParty-28', 'party': <Party-8>, 'line': 1, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168136n0'], 'node_name': 'node139709838168136n0', 'end': <EndParty-37>}
+
+
+% drawing node of type Parallel in matrix line 2 with attributes: {'annexid': 'Parallel-12', 'steps': [<Serial-29>, <Serial-30>], 'line': 2, 'length': 10, 'protocol': <Protocol-1>}
+
+
+% drawing node of type Serial in matrix line 2 with attributes: {'annexid': 'Serial-29', 'steps': [<HTTPRequest-38>, <HTTPResponse-39>, <Action-40>, <OpenWindowStartParty-41>, <HTTPRequest-42>, <HTTPResponse-43>, <ScriptAction-44>, <ScriptAction-45>, <EndParty-46>, <Action-47>], 'line': 2, 'length': 10, 'protocol': <Protocol-1>}
+
+
+% drawing node of type HTTPRequest in matrix line 2 with attributes: {'annexid': 'HTTPRequest-38', 'src': <Party-4>, 'dest': <Party-5>, 'method': 'GET', 'line': 2, 'protocol': <Protocol-1>, 'counter': 1, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-2-2', 'pos-3-2', 'node139709838168696n0'], 'node_name_counter': 1, 'tex_id': '\\setcounter{protostep}{0}\\protostep{HTTPRequest-38} ', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168696n0){\\setcounter{protostep}{0}\\protostep{HTTPRequest-38} \\contour{white}{GET}}', 'tikz_below': ''}
+
+
+% drawing node of type HTTPResponse in matrix line 3 with attributes: {'annexid': 'HTTPResponse-39', 'reply_to': <HTTPRequest-38>, 'line': 3, 'protocol': <Protocol-1>, 'counter': 2, 'text_above': '', 'text_below': '', 'dest': <Party-4>, 'src': <Party-5>, '_affecting_nodes': ['pos-3-3', 'pos-2-3', 'node139709838168752n0'], 'tex_id': '\\setcounter{protostep}{1}\\protostep{HTTPResponse-39} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168752n0){\\setcounter{protostep}{1}\\protostep{HTTPResponse-39} }', 'tikz_below': ''}
+
+
+% drawing node of type Action in matrix line 4 with attributes: {'annexid': 'Action-40', 'label': '$\\mathtt{CREATE\\_PEER\\_CONNECTION}$', 'party': <Party-4>, 'line': 4, 'protocol': <Protocol-1>, 'counter': 3, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168808n0'], 'node_name': 'node139709838168808n0', 'tex_id': '\\setcounter{protostep}{2}\\protostep{Action-40} '}
+
+
+% drawing node of type OpenWindowStartParty in matrix line 5 with attributes: {'annexid': 'OpenWindowStartParty-41', 'src': <Party-4>, 'dest': <Party-3>, 'line': 5, 'protocol': <Protocol-1>, 'counter': 4, 'node_name_counter': 2, '_affecting_nodes': ['node139709838168864n0', 'node139709838168864n1'], 'node_name': 'node139709838168864n0', 'party': <Party-3>, 'end': <EndParty-46>, 'text_above': 'open', 'tex_id': '\\setcounter{protostep}{3}\\protostep{OpenWindowStartParty-41} ', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168864n1){\\setcounter{protostep}{3}\\protostep{OpenWindowStartParty-41} \\contour{white}{open}}'}
+
+
+% drawing node of type HTTPRequest in matrix line 6 with attributes: {'annexid': 'HTTPRequest-42', 'src': <Party-3>, 'dest': <Party-2>, 'method': 'GET', 'path': '/.wk/idp-proxy', 'line': 6, 'protocol': <Protocol-1>, 'counter': 5, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-1-6', 'pos-0-6', 'node139709838168920n0'], 'node_name_counter': 1, 'tex_id': '\\setcounter{protostep}{4}\\protostep{HTTPRequest-42} ', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168920n0){\\setcounter{protostep}{4}\\protostep{HTTPRequest-42} \\contour{white}{GET}}', 'tikz_below': ''}
+
+
+% drawing node of type HTTPResponse in matrix line 7 with attributes: {'annexid': 'HTTPResponse-43', 'reply_to': <HTTPRequest-42>, 'line': 7, 'protocol': <Protocol-1>, 'counter': 6, 'text_above': '', 'text_below': '', 'dest': <Party-3>, 'src': <Party-2>, '_affecting_nodes': ['pos-0-7', 'pos-1-7', 'node139709838168976n0'], 'tex_id': '\\setcounter{protostep}{5}\\protostep{HTTPResponse-43} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838168976n0){\\setcounter{protostep}{5}\\protostep{HTTPResponse-43} }', 'tikz_below': ''}
+
+
+% drawing node of type ScriptAction in matrix line 8 with attributes: {'annexid': 'ScriptAction-44', 'dest': <Party-4>, 'src': <Party-3>, 'label': '$\\mathtt{GET\\_IA\\_INFO}$', 'reversed': True, 'data': '$\\mathit{stuff}$', 'line': 8, 'party': <Party-3>, 'protocol': <Protocol-1>, 'counter': 7, 'node_name_counter': 2, '_affecting_nodes': ['node139709838169032n0', 'node139709838169032n1'], 'node_name': 'node139709838169032n0', 'tex_id': '\\setcounter{protostep}{6}\\protostep{ScriptAction-44} ', 'text_above': '$\\mathit{stuff}$', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169032n1){\\contour{white}{$\\mathit{stuff}$}}'}
+
+
+% drawing node of type ScriptAction in matrix line 9 with attributes: {'annexid': 'ScriptAction-45', 'label': '$\\mathtt{SET\\_IA}$', 'dest': <Party-4>, 'src': <Party-3>, 'data': '$\\mathit{results}$', 'line': 9, 'party': <Party-3>, 'protocol': <Protocol-1>, 'counter': 8, 'node_name_counter': 2, '_affecting_nodes': ['node139709838169088n0', 'node139709838169088n1'], 'node_name': 'node139709838169088n0', 'tex_id': '\\setcounter{protostep}{7}\\protostep{ScriptAction-45} ', 'text_above': '$\\mathit{results}$', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169088n1){\\contour{white}{$\\mathit{results}$}}'}
+
+
+% drawing node of type EndParty in matrix line 10 with attributes: {'annexid': 'EndParty-46', 'party': <Party-3>, 'line': 10, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169144n0'], 'node_name': 'node139709838169144n0'}
+
+
+% drawing node of type Action in matrix line 11 with attributes: {'annexid': 'Action-47', 'label': '$\\mathtt{GET\\_OFFERdd}$', 'party': <Party-4>, 'line': 11, 'protocol': <Protocol-1>, 'counter': 9, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169200n0'], 'node_name': 'node139709838169200n0', 'tex_id': '\\setcounter{protostep}{8}\\protostep{Action-47} '}
+
+
+% drawing node of type Serial in matrix line 2 with attributes: {'annexid': 'Serial-30', 'condense': 'west', 'steps': [<HTTPRequest-48>, <HTTPResponse-49>, <Action-50>, <OpenWindowStartParty-51>, <HTTPRequest-52>, <HTTPResponse-53>, <ScriptAction-54>, <ScriptAction-55>, <EndParty-56>, <Action-57>], 'line': 2, 'length': 10, 'skip_number': False, 'protocol': <Protocol-1>, 'counter': 10}
+\node[annex_condensed_box,fit=(pos-4-2)(pos-3-2)(node139709838169256n0)(pos-3-3)(pos-4-3)(node139709838169368n0)(node139709838169424n0)(node139709838169424n1)(pos-5-6)(pos-6-6)(node139709838169480n0)(pos-6-7)(pos-5-7)(node139709838169592n0)(node139709838169648n0)(node139709838169704n0)(node139709838169760n0)](group139709838168248) {}; \node[] at (group139709838168248.west) {\setcounter{protostep}{9}\protostep{Serial-30} };
+
+% drawing node of type HTTPRequest in matrix line 2 with attributes: {'annexid': 'HTTPRequest-48', 'src': <Party-6>, 'dest': <Party-5>, 'method': 'GET', 'line': 2, 'protocol': <Protocol-1>, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-4-2', 'pos-3-2', 'node139709838169256n0'], 'node_name_counter': 1, 'tex_id': '', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169256n0){\\contour{white}{GET}}', 'tikz_below': ''}
+
+
+% drawing node of type HTTPResponse in matrix line 3 with attributes: {'annexid': 'HTTPResponse-49', 'reply_to': <HTTPRequest-48>, 'line': 3, 'protocol': <Protocol-1>, 'text_above': '', 'text_below': '', 'dest': <Party-6>, 'src': <Party-5>, '_affecting_nodes': ['pos-3-3', 'pos-4-3'], 'tex_id': '', 'tikz_above': '', 'tikz_below': ''}
+
+
+% drawing node of type Action in matrix line 4 with attributes: {'annexid': 'Action-50', 'label': '$\\mathtt{CREATE\\_PEER\\_CONNECTION}$', 'party': <Party-6>, 'line': 4, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169368n0'], 'node_name': 'node139709838169368n0', 'tex_id': ''}
+
+
+% drawing node of type OpenWindowStartParty in matrix line 5 with attributes: {'annexid': 'OpenWindowStartParty-51', 'src': <Party-6>, 'dest': <Party-7>, 'line': 5, 'protocol': <Protocol-1>, 'node_name_counter': 2, '_affecting_nodes': ['node139709838169424n0', 'node139709838169424n1'], 'node_name': 'node139709838169424n0', 'party': <Party-7>, 'end': <EndParty-56>, 'text_above': 'open', 'tex_id': '', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169424n1){\\contour{white}{open}}'}
+
+
+% drawing node of type HTTPRequest in matrix line 6 with attributes: {'annexid': 'HTTPRequest-52', 'src': <Party-7>, 'dest': <Party-8>, 'method': 'GET', 'path': '/.wk/idp-proxy', 'line': 6, 'protocol': <Protocol-1>, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-5-6', 'pos-6-6', 'node139709838169480n0'], 'node_name_counter': 1, 'tex_id': '', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169480n0){\\contour{white}{GET}}', 'tikz_below': ''}
+
+
+% drawing node of type HTTPResponse in matrix line 7 with attributes: {'annexid': 'HTTPResponse-53', 'reply_to': <HTTPRequest-52>, 'line': 7, 'protocol': <Protocol-1>, 'text_above': '', 'text_below': '', 'dest': <Party-7>, 'src': <Party-8>, '_affecting_nodes': ['pos-6-7', 'pos-5-7'], 'tex_id': '', 'tikz_above': '', 'tikz_below': ''}
+
+
+% drawing node of type ScriptAction in matrix line 8 with attributes: {'annexid': 'ScriptAction-54', 'dest': <Party-7>, 'src': <Party-6>, 'label': '$\\mathtt{GET\\_IA\\_INFO}$', 'line': 8, 'party': <Party-6>, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169592n0'], 'node_name': 'node139709838169592n0', 'tex_id': '', 'text_above': '', 'tikz_above': ''}
+
+
+% drawing node of type ScriptAction in matrix line 9 with attributes: {'annexid': 'ScriptAction-55', 'label': '$\\mathtt{SET\\_IA}$', 'dest': <Party-6>, 'src': <Party-7>, 'line': 9, 'party': <Party-7>, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169648n0'], 'node_name': 'node139709838169648n0', 'tex_id': '', 'text_above': '', 'tikz_above': ''}
+
+
+% drawing node of type EndParty in matrix line 10 with attributes: {'annexid': 'EndParty-56', 'party': <Party-7>, 'line': 10, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169704n0'], 'node_name': 'node139709838169704n0'}
+
+
+% drawing node of type Action in matrix line 11 with attributes: {'annexid': 'Action-57', 'label': '$\\mathtt{GET\\_OFFERxx}$', 'party': <Party-6>, 'line': 11, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838169760n0'], 'node_name': 'node139709838169760n0', 'tex_id': ''}
+
+
+% drawing node of type HTTPRequest in matrix line 12 with attributes: {'annexid': 'HTTPRequest-13', 'src': <Party-4>, 'dest': <Party-5>, 'parameters': '$\\mathit{offer}$', 'line': 12, 'protocol': <Protocol-1>, 'counter': 11, 'text_above': '', 'text_below': '$\\mathit{offer}$', '_affecting_nodes': ['pos-2-12', 'pos-3-12', 'node139709838134520n0', 'node139709838134520n1'], 'tex_id': '\\setcounter{protostep}{10}\\protostep{HTTPRequest-13} ', 'node_name_counter': 2, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134520n0){\\setcounter{protostep}{10}\\protostep{HTTPRequest-13} }', 'tikz_below': 'node [annex_arrow_text,below=8pt,anchor=base](node139709838134520n1){\\contour{white}{$\\mathit{offer}$}}'}
+
+
+% drawing node of type HTTPRequest in matrix line 13 with attributes: {'annexid': 'HTTPRequest-14', 'src': <Party-5>, 'dest': <Party-6>, 'parameters': '$\\mathit{offer}$', 'line': 13, 'protocol': <Protocol-1>, 'counter': 12, 'text_above': '', 'text_below': '$\\mathit{offer}$', '_affecting_nodes': ['pos-3-13', 'pos-4-13', 'node139709838133792n0', 'node139709838133792n1'], 'tex_id': '\\setcounter{protostep}{11}\\protostep{HTTPRequest-14} ', 'node_name_counter': 2, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838133792n0){\\setcounter{protostep}{11}\\protostep{HTTPRequest-14} }', 'tikz_below': 'node [annex_arrow_text,below=8pt,anchor=base](node139709838133792n1){\\contour{white}{$\\mathit{offer}$}}'}
+
+
+% drawing node of type Action in matrix line 14 with attributes: {'annexid': 'Action-15', 'label': '$\\mathtt{GET\\_OFFER\\_SET\\_ANSWER}$', 'party': <Party-6>, 'line': 14, 'protocol': <Protocol-1>, 'counter': 13, 'node_name_counter': 1, '_affecting_nodes': ['node139709838134576n0'], 'node_name': 'node139709838134576n0', 'tex_id': '\\setcounter{protostep}{12}\\protostep{Action-15} '}
+
+
+% drawing node of type HTTPRequest in matrix line 15 with attributes: {'annexid': 'HTTPRequest-16', 'src': <Party-6>, 'dest': <Party-5>, 'parameters': '$\\mathit{answer}$', 'line': 15, 'protocol': <Protocol-1>, 'counter': 14, 'text_above': '', 'text_below': '$\\mathit{answer}$', '_affecting_nodes': ['pos-4-15', 'pos-3-15', 'node139709838134632n0', 'node139709838134632n1'], 'tex_id': '\\setcounter{protostep}{13}\\protostep{HTTPRequest-16} ', 'node_name_counter': 2, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134632n0){\\setcounter{protostep}{13}\\protostep{HTTPRequest-16} }', 'tikz_below': 'node [annex_arrow_text,below=8pt,anchor=base](node139709838134632n1){\\contour{white}{$\\mathit{answer}$}}'}
+
+
+% drawing node of type HTTPRequest in matrix line 16 with attributes: {'annexid': 'HTTPRequest-17', 'src': <Party-5>, 'dest': <Party-4>, 'parameters': '$\\mathit{answer}$', 'line': 16, 'protocol': <Protocol-1>, 'counter': 15, 'text_above': '', 'text_below': '$\\mathit{answer}$', '_affecting_nodes': ['pos-3-16', 'pos-2-16', 'node139709838134688n0', 'node139709838134688n1'], 'tex_id': '\\setcounter{protostep}{14}\\protostep{HTTPRequest-17} ', 'node_name_counter': 2, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134688n0){\\setcounter{protostep}{14}\\protostep{HTTPRequest-17} }', 'tikz_below': 'node [annex_arrow_text,below=8pt,anchor=base](node139709838134688n1){\\contour{white}{$\\mathit{answer}$}}'}
+
+
+% drawing node of type Parallel in matrix line 17 with attributes: {'annexid': 'Parallel-18', 'steps': [<Serial-31>, <Serial-32>], 'line': 17, 'length': 7, 'protocol': <Protocol-1>}
+
+
+% drawing node of type Serial in matrix line 17 with attributes: {'annexid': 'Serial-31', 'steps': [<OpenWindowStartParty-58>, <HTTPRequest-59>, <HTTPResponse-60>, <ScriptAction-61>, <ScriptAction-62>, <EndParty-63>, <Action-64>], 'line': 17, 'length': 7, 'protocol': <Protocol-1>}
+
+
+% drawing node of type OpenWindowStartParty in matrix line 17 with attributes: {'annexid': 'OpenWindowStartParty-58', 'src': <Party-4>, 'dest': <Party-3>, 'line': 17, 'protocol': <Protocol-1>, 'counter': 16, 'node_name_counter': 2, '_affecting_nodes': ['node139709838169816n0', 'node139709838169816n1'], 'node_name': 'node139709838169816n0', 'party': <Party-3>, 'end': <EndParty-63>, 'text_above': 'open', 'tex_id': '\\setcounter{protostep}{15}\\protostep{OpenWindowStartParty-58} ', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169816n1){\\setcounter{protostep}{15}\\protostep{OpenWindowStartParty-58} \\contour{white}{open}}'}
+
+
+% drawing node of type HTTPRequest in matrix line 18 with attributes: {'annexid': 'HTTPRequest-59', 'src': <Party-3>, 'dest': <Party-2>, 'method': 'GET', 'path': '/.wk/idp-proxy', 'line': 18, 'protocol': <Protocol-1>, 'counter': 17, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-1-18', 'pos-0-18', 'node139709838169872n0'], 'node_name_counter': 1, 'tex_id': '\\setcounter{protostep}{16}\\protostep{HTTPRequest-59} ', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169872n0){\\setcounter{protostep}{16}\\protostep{HTTPRequest-59} \\contour{white}{GET}}', 'tikz_below': ''}
+
+
+% drawing node of type HTTPResponse in matrix line 19 with attributes: {'annexid': 'HTTPResponse-60', 'reply_to': <HTTPRequest-59>, 'line': 19, 'protocol': <Protocol-1>, 'counter': 18, 'text_above': '', 'text_below': '', 'dest': <Party-3>, 'src': <Party-2>, '_affecting_nodes': ['pos-0-19', 'pos-1-19', 'node139709838169928n0'], 'tex_id': '\\setcounter{protostep}{17}\\protostep{HTTPResponse-60} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169928n0){\\setcounter{protostep}{17}\\protostep{HTTPResponse-60} }', 'tikz_below': ''}
+
+
+% drawing node of type ScriptAction in matrix line 20 with attributes: {'annexid': 'ScriptAction-61', 'dest': <Party-4>, 'src': <Party-3>, 'label': '$\\mathtt{GET\\_IA\\_INFO}$', 'reversed': True, 'data': '$\\mathit{stuff}$', 'line': 20, 'party': <Party-3>, 'protocol': <Protocol-1>, 'counter': 19, 'node_name_counter': 2, '_affecting_nodes': ['node139709838169984n0', 'node139709838169984n1'], 'node_name': 'node139709838169984n0', 'tex_id': '\\setcounter{protostep}{18}\\protostep{ScriptAction-61} ', 'text_above': '$\\mathit{stuff}$', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838169984n1){\\contour{white}{$\\mathit{stuff}$}}'}
+
+
+% drawing node of type ScriptAction in matrix line 21 with attributes: {'annexid': 'ScriptAction-62', 'label': '$\\mathtt{SET\\_IA}$', 'dest': <Party-4>, 'src': <Party-3>, 'data': '$\\mathit{results}$', 'line': 21, 'party': <Party-3>, 'protocol': <Protocol-1>, 'counter': 20, 'node_name_counter': 2, '_affecting_nodes': ['node139709838170040n0', 'node139709838170040n1'], 'node_name': 'node139709838170040n0', 'tex_id': '\\setcounter{protostep}{19}\\protostep{ScriptAction-62} ', 'text_above': '$\\mathit{results}$', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838170040n1){\\contour{white}{$\\mathit{results}$}}'}
+
+
+% drawing node of type EndParty in matrix line 22 with attributes: {'annexid': 'EndParty-63', 'party': <Party-3>, 'line': 22, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170096n0'], 'node_name': 'node139709838170096n0'}
+
+
+% drawing node of type Action in matrix line 23 with attributes: {'annexid': 'Action-64', 'label': '$\\mathtt{GET\\_OFFER}$', 'party': <Party-4>, 'line': 23, 'protocol': <Protocol-1>, 'counter': 21, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170152n0'], 'node_name': 'node139709838170152n0', 'tex_id': '\\setcounter{protostep}{20}\\protostep{Action-64} '}
+
+
+% drawing node of type Serial in matrix line 17 with attributes: {'annexid': 'Serial-32', 'steps': [<OpenWindowStartParty-65>, <HTTPRequest-66>, <HTTPResponse-67>, <ScriptAction-68>, <ScriptAction-69>, <EndParty-70>, <Action-71>], 'line': 17, 'length': 7, 'protocol': <Protocol-1>}
+
+
+% drawing node of type OpenWindowStartParty in matrix line 17 with attributes: {'annexid': 'OpenWindowStartParty-65', 'src': <Party-6>, 'dest': <Party-7>, 'line': 17, 'protocol': <Protocol-1>, 'counter': 22, 'node_name_counter': 2, '_affecting_nodes': ['node139709838170208n0', 'node139709838170208n1'], 'node_name': 'node139709838170208n0', 'party': <Party-7>, 'end': <EndParty-70>, 'text_above': 'open', 'tex_id': '\\setcounter{protostep}{21}\\protostep{OpenWindowStartParty-65} ', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838170208n1){\\setcounter{protostep}{21}\\protostep{OpenWindowStartParty-65} \\contour{white}{open}}'}
+
+
+% drawing node of type HTTPRequest in matrix line 18 with attributes: {'annexid': 'HTTPRequest-66', 'src': <Party-7>, 'dest': <Party-8>, 'method': 'GET', 'path': '/.wk/idp-proxy', 'line': 18, 'protocol': <Protocol-1>, 'counter': 23, 'text_above': 'GET', 'text_below': '', '_affecting_nodes': ['pos-5-18', 'pos-6-18', 'node139709838170264n0'], 'node_name_counter': 1, 'tex_id': '\\setcounter{protostep}{22}\\protostep{HTTPRequest-66} ', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838170264n0){\\setcounter{protostep}{22}\\protostep{HTTPRequest-66} \\contour{white}{GET}}', 'tikz_below': ''}
+
+
+% drawing node of type HTTPResponse in matrix line 19 with attributes: {'annexid': 'HTTPResponse-67', 'reply_to': <HTTPRequest-66>, 'line': 19, 'protocol': <Protocol-1>, 'counter': 24, 'text_above': '', 'text_below': '', 'dest': <Party-7>, 'src': <Party-8>, '_affecting_nodes': ['pos-6-19', 'pos-5-19', 'node139709838170320n0'], 'tex_id': '\\setcounter{protostep}{23}\\protostep{HTTPResponse-67} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838170320n0){\\setcounter{protostep}{23}\\protostep{HTTPResponse-67} }', 'tikz_below': ''}
+
+
+% drawing node of type ScriptAction in matrix line 20 with attributes: {'annexid': 'ScriptAction-68', 'dest': <Party-6>, 'src': <Party-7>, 'label': '$\\mathtt{GET\\_IA\\_INFO}$', 'reversed': True, 'data': '$\\mathit{stuff}$', 'line': 20, 'party': <Party-7>, 'protocol': <Protocol-1>, 'counter': 25, 'node_name_counter': 2, '_affecting_nodes': ['node139709838170376n0', 'node139709838170376n1'], 'node_name': 'node139709838170376n0', 'tex_id': '\\setcounter{protostep}{24}\\protostep{ScriptAction-68} ', 'text_above': '$\\mathit{stuff}$', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838170376n1){\\contour{white}{$\\mathit{stuff}$}}'}
+
+
+% drawing node of type ScriptAction in matrix line 21 with attributes: {'annexid': 'ScriptAction-69', 'label': '$\\mathtt{SET\\_IA}$', 'dest': <Party-6>, 'src': <Party-7>, 'data': '$\\mathit{results}$', 'line': 21, 'party': <Party-7>, 'protocol': <Protocol-1>, 'counter': 26, 'node_name_counter': 2, '_affecting_nodes': ['node139709838170432n0', 'node139709838170432n1'], 'node_name': 'node139709838170432n0', 'tex_id': '\\setcounter{protostep}{25}\\protostep{ScriptAction-69} ', 'text_above': '$\\mathit{results}$', 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838170432n1){\\contour{white}{$\\mathit{results}$}}'}
+
+
+% drawing node of type EndParty in matrix line 22 with attributes: {'annexid': 'EndParty-70', 'party': <Party-7>, 'line': 22, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170488n0'], 'node_name': 'node139709838170488n0'}
+
+
+% drawing node of type Action in matrix line 23 with attributes: {'annexid': 'Action-71', 'label': '$\\mathtt{GET\\_OFFER}$', 'party': <Party-6>, 'line': 23, 'protocol': <Protocol-1>, 'counter': 27, 'node_name_counter': 1, '_affecting_nodes': ['node139709838170544n0'], 'node_name': 'node139709838170544n0', 'tex_id': '\\setcounter{protostep}{26}\\protostep{Action-71} '}
+
+
+% drawing node of type Separator in matrix line 24 with attributes: {'annexid': 'Separator-19', 'line': 24, 'protocol': <Protocol-1>}
+
+
+% drawing node of type Comment in matrix line 25 with attributes: {'annexid': 'Comment-20', 'label': 'Establish direct connection:', 'line': 25, 'protocol': <Protocol-1>, 'text_below': 'Establish direct connection:', 'node_name_counter': 1, '_affecting_nodes': ['node139709838134856n0'], 'tikz_below': 'node [annex_arrow_text,below=8pt,anchor=base](node139709838134856n0){\\contour{white}{Establish direct connection:}}'}
+
+
+% drawing node of type HTTPRequest in matrix line 26 with attributes: {'annexid': 'HTTPRequest-21', 'src': <Party-4>, 'dest': <Party-6>, 'line': 26, 'protocol': <Protocol-1>, 'counter': 28, 'text_above': '', 'text_below': '', '_affecting_nodes': ['pos-2-26', 'pos-4-26', 'node139709838134912n0'], 'tex_id': '\\setcounter{protostep}{27}\\protostep{HTTPRequest-21} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134912n0){\\setcounter{protostep}{27}\\protostep{HTTPRequest-21} }', 'tikz_below': ''}
+
+
+% drawing node of type HTTPRequest in matrix line 27 with attributes: {'annexid': 'HTTPRequest-22', 'dest': <Party-4>, 'src': <Party-6>, 'line': 27, 'protocol': <Protocol-1>, 'counter': 29, 'text_above': '', 'text_below': '', '_affecting_nodes': ['pos-4-27', 'pos-2-27', 'node139709838134968n0'], 'tex_id': '\\setcounter{protostep}{28}\\protostep{HTTPRequest-22} ', 'node_name_counter': 1, 'tikz_above': 'node [annex_arrow_text,above=2.6pt,anchor=base](node139709838134968n0){\\setcounter{protostep}{28}\\protostep{HTTPRequest-22} }', 'tikz_below': ''}
+
+
+% drawing node of type Parallel in matrix line 28 with attributes: {'annexid': 'Parallel-23', 'steps': [<EndParty-33>, <EndParty-34>, <EndParty-35>, <EndParty-36>, <EndParty-37>], 'line': 28, 'length': 1, 'protocol': <Protocol-1>}
+
+
+% drawing node of type EndParty in matrix line 28 with attributes: {'annexid': 'EndParty-33', 'party': <Party-4>, 'line': 28, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168416n0'], 'node_name': 'node139709838168416n0'}
+
+
+% drawing node of type EndParty in matrix line 28 with attributes: {'annexid': 'EndParty-34', 'party': <Party-2>, 'line': 28, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168472n0'], 'node_name': 'node139709838168472n0'}
+
+
+% drawing node of type EndParty in matrix line 28 with attributes: {'annexid': 'EndParty-35', 'party': <Party-5>, 'line': 28, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168528n0'], 'node_name': 'node139709838168528n0'}
+
+
+% drawing node of type EndParty in matrix line 28 with attributes: {'annexid': 'EndParty-36', 'party': <Party-6>, 'line': 28, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168584n0'], 'node_name': 'node139709838168584n0'}
+
+
+% drawing node of type EndParty in matrix line 28 with attributes: {'annexid': 'EndParty-37', 'party': <Party-8>, 'line': 28, 'protocol': <Protocol-1>, 'node_name_counter': 1, '_affecting_nodes': ['node139709838168640n0'], 'node_name': 'node139709838168640n0'}
+
+
+\end{pgfonlayer}
+        \end{tikzpicture}
+        

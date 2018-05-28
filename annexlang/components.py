@@ -1,7 +1,9 @@
 import yaml
 from itertools import chain, count
+import re
 
 object_counter = 0
+
 
 class cached_property(object):
     """
@@ -23,6 +25,7 @@ class cached_property(object):
 
         return attr
 
+    
 class ProtocolObject(yaml.YAMLObject):
     def __new__(cls):
         global object_counter
@@ -40,6 +43,7 @@ class ProtocolObject(yaml.YAMLObject):
     def __repr__(self):
         return f"""<{self.annexid}>"""
 
+    
 class ProtocolStep(ProtocolObject):
     node_name_counter = 0
     skip_number = 0
@@ -278,3 +282,26 @@ class Group(ProtocolObject):
         return fr"""\node[annex_group_box,{fit_string}]({gid}) {{}}; \node[anchor=base,above=of {gid}.north,above=-2.5ex,anchor=base] {{{self.name}}};"""
 
 
+class Separator(ProtocolStep):
+    skip_number = True
+
+    def tikz_arrows(self):
+        src = self.get_pos(self.protocol.parties[0].column, self.line)
+        dest = self.get_pos(self.protocol.parties[-1].column, self.line)
+        out = fr"""%% draw separator line
+        \draw[annex_separator] ({src}) to  ({dest});"""
+        out += super().tikz_arrows()
+        return out
+
+    @property
+    def height(self):
+        return "4ex", "center"
+
+    @classmethod
+    def constructor(cls, loader, node):
+        return cls()
+
+    
+yaml.add_constructor('!separator', Separator.constructor)
+pattern = re.compile(r'^-{3,}$')
+yaml.add_implicit_resolver('!separator', pattern)
