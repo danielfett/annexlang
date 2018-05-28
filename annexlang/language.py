@@ -169,26 +169,3 @@ class OpenWindowStartParty(StartParty):
     def affected_parties(self):
         yield self.src
         yield self.dest
-
-
-class Comment(ProtocolStep):
-    yaml_tag = '!comment'
-    id_above = False
-    skip_number = True
-
-    def tikz_arrows(self):
-        src = self.get_pos(self.protocol.parties[0].column, self.line)
-        dest = self.get_pos(self.protocol.parties[-1].column, self.line)
-        self.text_below = self.label
-        out = fr"""%% draw comment
-        \draw[draw=none] ({src}) to {self.tikz_below} ({dest});"""
-        out += super().tikz_arrows()
-        return out
-    
-    @property
-    def height(self):
-        return "6ex", "center,yshift=1ex"
-    
-    @property
-    def affected_parties(self):
-        yield from []

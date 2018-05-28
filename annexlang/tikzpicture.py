@@ -4,6 +4,7 @@ class TikzPicture:
         'colsep': '1.75ex',
         'rowsep': '4ex',
         'enumerate': '',
+        'styles': [],
     }
     
     def __init__(self, annexfile):

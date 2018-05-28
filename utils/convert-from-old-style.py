@@ -1,12 +1,22 @@
 #!/usr/bin/python3
 
 import sys
+import json
 
 if len(sys.argv) != 2:
     sys.exit("Usage: %s INPUTFILE" % sys.argv[0])
 
+    
 def get_content(line):
     return [x.strip() for x in line.split(':', 1)]
+
+
+def warn(text):
+    sys.stderr.write(text + "\n")
+
+
+def esc(text):
+    return json.dumps(text)
 
     
 class Block():
@@ -38,110 +48,8 @@ class Block():
         if self.type.startswith('http') and self.method != 'response' and not hasattr(self, 'path'):
             raise Exception("HTTP request without path.")
 
-    def getAboveBelow(self):
-        above = None
-        below = None
-        if self.type.startswith('http'):
-            if self.method == 'response':
-                above = 'Response'
-                below = texify(self.contents) if hasattr(self, 'contents') else ''
-            elif self.method == 'roundtrip':
-                above = 'GET ' + texify(self.path)
-                below = ''
-            else:
-                above = '%s %s' % (self.method.upper(), texify(self.path))
-                below = texify(self.contents) if hasattr(self, 'contents') else ''
-        elif self.type == 'postmessage':
-            above = texify(self.contents)
-            below = texify(self.comment) if hasattr(self, 'comment') else ''
-        elif self.type == 'open':
-            above = '\\textbf{open}'
-            below = texify(self.contents) if hasattr(self, 'contents') else ''
-        elif self.type == 'create':
-            above = '\\textbf{create}'
-            below = texify(self.contents) if hasattr(self, 'contents') else ''
-
-        above = "\\textbf{%s}" % above
-        if above != None and hasattr(self, 'id'):
-            above = "\protostep{%s} %s" % (self.id, above)
-        return (above, below)
-    
-    def getLabel(self):
-        above, below = self.getAboveBelow()
-        if above != None or below != None:
-            label = 'to node [above=2.6pt, anchor=base]{%(above)s} node [below=-8pt, text width=0.5\\linewidth, anchor=base]{\\begin{center} %(below)s\\end{center}}' % {'above': above, 'below': below}
-        else:
-            label = '--'
-            
-        return label
-
-    def getDraw(self):
-        draw = ''
-        if self.type == 'postmessage':
-            draw = ',color=red,dashed'
-        elif self.type.startswith('http-xhr') \
-                or (self.type == 'http-response' \
-                        and hasattr(self, 'for') \
-                        and getattr(self, 'for').type.startswith('http-xhr')):
-            draw = ',color=blue,>=latex'
-        elif self.type in ['open','create','close']:
-            draw = ',snake=snake,segment amplitude=0.2ex'
-        return draw
-
-    def getContent(self, i, grid_started):
-        out = ''
-        if self.type == 'comment':
-            out += '\\path (%s-%d) to node [above=-1ex,midway,text width=\\linewidth]{\\begin{center}\emph{\\scriptsize %s}\\end{center}} (%s-%d);\n' % (parties[0], i, texify(self.comment), parties[-1], i)
-            return out
-        elif self.type == 'event':
-            out += '\\path (%s-%d) to node [above=-1ex,midway,text width=\\textwidth]{\\color{OliveGreen}\\begin{center}\\textbf{\\scriptsize %s}\\end{center}} (%s-%d);\n' % (parties[0], i, texify(self.event), parties[-1], i)
-            return out
-        elif self.type == 'action':
-            text = ("\protostep{%s} " % self.id if hasattr(self, 'id') else '') + self.contents
-            out += '\\node[draw,anchor=base,fill=white,rounded corners] at (%s-%d) {%s};' % (getattr(self, 'from'), i, text)
-            return out
-        elif self.type == 'close':
-            # no need to draw anything here.
-            return ''
-        elif self.type == 'action':
-            return ''
-        elif self.type == 'separator':
-            left = "(%s-%d.west)" % (parties[0], i)
-            right = "(%s-%d.east)" % (parties[-1], i)
-            out += "\\draw [dashed] %s -- %s;\n" % (left, right)
-            if hasattr(self, 'comment'):
-                out += '\\node[draw=none,anchor=northwest,below=2ex,right=1ex] at %s {%s};\n' % (left, texify(self.comment))
-            return out
-
-
-        draw = self.getDraw()
-
-        arrow_from = "%s-%d" % (getattr(self, 'from'), i)
-        arrow_to = "%s-%d" % (self.to, i)
-        if self.type in ['open','create']:
-            arrow_to = "%s-start-%d" % (self.to, grid_started.count(self.to))
-            grid_started.append(self.to)
-
-        label = self.getLabel()
-
-        out += "\\draw[->%s] (%s) %s (%s); \n" % (draw, arrow_from, label, arrow_to)
-        if self.type == 'http-roundtrip':
-            out += "\\draw[->%s] ([yshift=-3pt]%s.west) to ([yshift=-3pt]%s.east); \n" % (draw, arrow_to, arrow_from)
-        return out
-
-    def getCalcBlockHeight(self, i, rowsep):
-        above, below = self.getAboveBelow()
-        var = self.getCalcBlockHeightVar(i)
-        out = r'''\newlength''' + var + "\n"
-        out += r'''\settototalheight%s{\parbox{0.4\linewidth}{%s}}''' % (var, below) + "\n"
-        out += r'''\setlength%s{\dimexpr %s - %s/4}''' % (var, var, rowsep) + "\n"
-        return out
-
-    def getCalcBlockHeightVar(self, i):
-        return r'''\blockExtraHeight%s%s''' % (replaceNumbers(str(i)), myuuid)
 
     
-groups = {}
 parties = []
 blocks = []
 blocks_by_id = {}
@@ -239,15 +147,39 @@ for b in blocks:
         method = b.type[5:].upper()
         
         print(f'  - !http-request &{getattr(b, "id", id(b))}')
+        if hasattr(b, 'id'):
+            print(f'    id: {b.id}')
         print(f'    src: *{getattr(b, "from").lower()}')
         print(f'    dest: *{getattr(b, "to").lower()}')
         print(f'    method: {method}')
         if hasattr(b, 'path'):
-            print(f'    path: {b.path}')
+            print(f'    path: {esc(b.path)}')
         if hasattr(b, 'contents'):
             params = b.contents.replace(r'\\', '\\\\')
-            print(f'    parameters: {params}')
-            
+            print(f'    parameters: {esc(params)}')
+    elif b.type == 'http-response':
+        print(f'  - !http-response')
+        if hasattr(b, 'id'):
+            print(f'    id: {b.id}')
+        print(f'    src: *{getattr(b, "from").lower()}')
+        print(f'    dest: *{getattr(b, "to").lower()}')
+        if hasattr(b, 'contents'):
+            params = b.contents.replace(r'\\', '\\\\')
+            print(f'    parameters: {esc(params)}')
+        
+    elif b.type == 'separator':
+        print('  - -----------------------------')
+        if hasattr(b, 'comment'):
+            print( '  - !comment')
+            print(f'    label: {esc(b.comment)}')
+
+    elif b.type == 'comment':
+        print( '  - !comment')
+        print(f'    label: {esc(b.comment)}')
+    else:
+        warn(f"Skipped block of unknown type: {b.type}")
+        print(f'# skipped block of type {b.type}.')
+        
 print('# FINISH UP')
 print('  - !Parallel')
 print('    steps:')
