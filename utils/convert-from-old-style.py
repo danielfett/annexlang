@@ -153,7 +153,7 @@ for b in blocks:
         print(f'    dest: *{getattr(b, "to").lower()}')
         print(f'    method: {method}')
         if hasattr(b, 'path'):
-            print(f'    path: {esc(b.path)}')
+            print(f'    url: {esc(b.path)}')
         if hasattr(b, 'contents'):
             params = b.contents.replace(r'\\', '\\\\')
             print(f'    parameters: {esc(params)}')

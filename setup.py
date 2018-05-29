@@ -9,7 +9,7 @@ def readme():
 
 setup(
     name='annexlang',
-    version='0.2',
+    version='0.3',
     description='A description language for drawing communication protocols in TeX documents.',
     url='http://github.com/webhamster/annexlang',
     author='Daniel Fett',
