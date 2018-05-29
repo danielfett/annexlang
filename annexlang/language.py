@@ -54,6 +54,8 @@ class HTTPResponse(HTTPRequest):
     def _init(self, *args, **kwargs):
         super()._init(*args, **kwargs)
         self.text_above = " ".join((self.code, self.headers, )).strip()
+        if not self.text_above:
+            self.text_above = 'Response'
         self.text_below = self.parameters
         
 

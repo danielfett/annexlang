@@ -56,7 +56,7 @@ class TikzPicture:
                     extrawidths.append(self.protocol.parties[col].extrawidth + "/2")
                 if col < (len(self.protocol.parties) - 1) and hasattr(self.protocol.parties[col+1], 'extrawidth'):
                     extrawidths.append(self.protocol.parties[col+1].extrawidth + "/2")
-                if col < len(self.protocol.parties) - line_offset:
+                if col < len(self.protocol.parties) - line_offset - 1:
                     f.write(r""" &""" )
                     if extrawidths:
                         f.write(f"[{'+'.join(extrawidths)}]")
