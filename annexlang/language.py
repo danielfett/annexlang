@@ -63,6 +63,7 @@ class PostMessage(ProtocolStep):
     yaml_tag = '!postmessage'
     body = ""
     id_above = True
+    text_style = "annex_postmessage_text"
 
     def _init(self, *args, **kwargs):
         super()._init(*args, **kwargs)

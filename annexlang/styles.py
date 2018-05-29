@@ -23,7 +23,6 @@ class StyleDefault(yaml.YAMLObject):
     annex_start_party_box/.style={fill=white,draw,rounded corners=0.3ex,anchor=center,inner sep=0.5ex,minimum height=1.7em,inner sep=1.5mm},
     annex_end_party_box/.style={annex_start_party_box,scale=0.7},
     % individual steps
-    annex_arrow_text/.style={font=\sffamily\tiny},
     annex_http_request/.style={-Latex,line,draw=purple},
     annex_http_response/.style={-Latex[open],line,draw=purple},
     annex_postmessage/.style={->,line,dashed,draw=red},
@@ -34,8 +33,11 @@ class StyleDefault(yaml.YAMLObject):
     annex_script_action_arrow_reversed/.style={<-,line},
     annex_open_window_start_party_box/.style={annex_start_party_box},
     annex_open_window_start_party_arrow/.style={->,line,dashed},
-    annex_comment_text/.style={font=\bffamily},
     annex_separator/.style={seperatorline,dashed},
+    % text styles
+    annex_arrow_text/.style={font=\sffamily\tiny},
+    annex_postmessage_text/.style={font=\sffamily\tiny\color{red}},
+    annex_comment_text/.style={font=\bffamily},
     """
 
 class StyleDebug(yaml.YAMLObject):
