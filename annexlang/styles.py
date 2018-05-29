@@ -37,7 +37,7 @@ class StyleDefault(yaml.YAMLObject):
     % text styles
     annex_arrow_text/.style={font=\sffamily\tiny},
     annex_postmessage_text/.style={font=\sffamily\tiny\color{red}},
-    annex_comment_text/.style={font=\bffamily},
+    annex_comment_text/.style={font=\bfseries},
     """
 
 class StyleDebug(yaml.YAMLObject):

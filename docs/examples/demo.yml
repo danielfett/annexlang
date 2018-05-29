@@ -1,13 +1,14 @@
 options:
   enumerate: "\\setcounter{protostep}{%d}\\protostep{%s} "
   colsep: 0.15\textwidth
-  rowsep: 1ex
+  rowsep: 0.5ex
   styles:
     - !style-default {}
     #- !style-debug {}
     - !style-custom
       style: |
         server/.style={draw=white,fill=black,text=white},
+        xhr/.style={draw=blue},
 protocol:
   !Protocol
   parties:
@@ -79,13 +80,11 @@ protocol:
          - !open-window-start-party
            src: *b1d
            dest: *b1i
-         - !http-request &get_doc_2
+         - !http-request-response &get_doc_2
            src: *b1i
            dest: *idp1
            method: GET
-           path: /.wk/idp-proxy
-         - !http-response
-           reply_to: *get_doc_2
+           url: /.wk/idp-proxy
          - !script-action
            dest: *b1d
            src: *b1i
@@ -122,15 +121,17 @@ protocol:
             src: *b2i
             dest: *idp2
             method: GET
-            path: /.wk/idp-proxy
+            url: /.wk/idp-proxy
+            style: xhr
         - !http-response
             reply_to: *get_doc_4
-        - !script-action
+            style: xhr
+        - !postmessage
           dest: *b2i
           src: *b2d
-          label: $\mathtt{GET\_IA\_INFO}$
-        - !script-action
-          label: $\mathtt{SET\_IA}$
+          body: post message stuff
+        - !postmessage
+          body: 42
           dest: *b2d
           src: *b2i
         - !end-party
@@ -170,7 +171,7 @@ protocol:
            src: *b1i
            dest: *idp1
            method: GET
-           path: /.wk/idp-proxy
+           url: /.wk/idp-proxy
          - !http-response
            reply_to: *get_doc_2_2
          - !script-action
@@ -199,7 +200,7 @@ protocol:
            src: *b2i
            dest: *idp2
            method: GET
-           path: /.wk/idp-proxy
+           url: /.wk/idp-proxy
          - !http-response
            reply_to: *get_doc_3_2
          - !script-action
