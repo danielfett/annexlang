@@ -216,3 +216,32 @@ class OpenWindowStartParty(StartParty):
     def affected_parties(self):
         yield self.src
         yield self.dest
+
+
+class CloseWindowEndParty(EndParty):
+    yaml_tag = '!close-window-end-party'
+    id_above = True
+    skip_number = False
+
+    def _init(self, *args, **kwargs):
+        super()._init(*args, **kwargs)
+        self.party = self.dest
+    
+    def tikz_arrows(self):
+        direction = "east" if self.src.column > self.dest.column else "west"
+        src = self.get_pos(self.src.column, self.line)
+        self.text_above = "close"
+        out = fr"""%% draw close window arrow
+        \draw[annex_close_window_end_party_arrow{self.tikz_extra_style}] ({src}) to  {self.tikz_above} ({self.node_name}.{direction});"""
+        out += super().tikz_arrows()
+        return out
+    
+    @property
+    def height(self):
+        return "6ex", "center,yshift=1ex"
+    
+    @property
+    def affected_parties(self):
+        yield self.src
+        yield self.dest
+

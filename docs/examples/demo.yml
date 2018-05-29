@@ -134,8 +134,9 @@ protocol:
           body: 42
           dest: *b2d
           src: *b2i
-        - !end-party
-          party: *b2i                         
+        - !close-window-end-party
+          src: *b2d
+          dest: *b2i                         
         - !action
           label: $\mathtt{GET\_OFFERxx}$
           party: *b2d
