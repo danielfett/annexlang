@@ -32,7 +32,7 @@ class ProtocolObject(yaml.YAMLObject):
         object_counter += 1
 
         obj = super().__new__(cls)
-        obj.annexid = "{}-{}".format(cls.__name__, object_counter)
+        obj.annexid = "{}_{}".format(cls.__name__, object_counter)
 
         return obj
 
@@ -102,7 +102,7 @@ class ProtocolStep(ProtocolObject):
             )
 
     def create_affecting_node_name(self, parties=None):
-        name = f"node{id(self)}n{self.node_name_counter}"
+        name = f"{self.annexid}_{self.node_name_counter}"
         self.node_name_counter += 1
         self._affecting_nodes = self._affecting_nodes + [name]
 
@@ -172,7 +172,7 @@ class MultiStep(ProtocolStep):
             self.condense = 'north west'
 
         fit_string = "fit=" + ''.join(f'({x})' for x in self.affecting_nodes)
-        gid = f"group{id(self)}"
+        gid = self.annexid
         out = fr"""\node[annex_condensed_box,{fit_string}]({gid}) {{}}; """
         out += fr"\node[] at ({gid}.{self.condense}) {{{self.tex_id}}};"
         return out
@@ -288,7 +288,7 @@ class Group(ProtocolObject):
             first_party.fit_string,
             last_party.fit_string,
         ))
-        gid = f"group{id(self)}"
+        gid = self.annexid
         return fr"""\node[annex_group_box,{fit_string}]({gid}) {{}}; \node[anchor=base,above=of {gid}.north,above=-2.5ex,anchor=base] {{{self.name}}};"""
 
 
