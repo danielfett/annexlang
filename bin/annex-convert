@@ -4,13 +4,27 @@ import sys
 import yaml
 import sys
 import argparse
+import os
 
 from annexlang import TikzPicture
+
+CUSTOM_OBJECTS_FILE = 'annex_custom.py'
 
 parser = argparse.ArgumentParser(description='Convert an file from the Annex language to a TikZ picture that can be used in TeX documents.')
 parser.add_argument('infile', type=str, help='Input file, YAML format with Annex extensions.')
 parser.add_argument('outfile', type=str, help='Output file, TeX code.')
 args = parser.parse_args()
+
+custom_objects_filename = os.path.join(
+    os.path.dirname(args.infile),
+    CUSTOM_OBJECTS_FILE
+)
+
+if os.path.exists(custom_objects_filename):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('annex_custom', custom_objects_filename)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
 
 with open(args.infile, 'r') as inf:
     src = inf.read()

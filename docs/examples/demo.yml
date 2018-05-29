@@ -229,6 +229,8 @@ protocol:
   - !http-request
     dest: *b1d
     src: *b2d
+  - !my-custom-action # custom action, see annex_custom.py
+    party: *idp2
 # FINISH UP
   - !Parallel
     steps:
