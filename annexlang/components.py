@@ -47,7 +47,9 @@ class ProtocolObject(yaml.YAMLObject):
 class ProtocolStep(ProtocolObject):
     node_name_counter = 0
     skip_number = 0
+    text_style = "annex_arrow_text"
     _affecting_nodes = []
+    style = ""
     
     def length(self):
         return 1
@@ -70,11 +72,18 @@ class ProtocolStep(ProtocolObject):
         return r"\contour{white}{%s}" % text
 
     @cached_property
+    def tikz_extra_style(self):
+        if self.style:
+            return f",{self.style}"
+        return ""
+
+    @cached_property
     def tikz_above(self):
         if not self.text_above and (not getattr(self, 'id_above', True) or not self.tex_id):
             return ""
         else:
-            return r"""node [annex_arrow_text,above=2.6pt,anchor=base](%s){%s%s}""" % (
+            return r"""node [%s,above=2.6pt,anchor=base](%s){%s%s}""" % (
+                self.text_style,
                 self.create_affecting_node_name(parties=[]),
                 self.tex_id if getattr(self, 'id_above', False) else '',
                 self.contour(self.text_above)
@@ -87,7 +96,7 @@ class ProtocolStep(ProtocolObject):
         else:
             text = r"\contour{white}{%s}" % self.text_below
             return r"""node [%s,below=8pt,anchor=base](%s){%s}""" % (
-                getattr(self, 'text_style', 'annex_arrow_text'),
+                self.text_style,
                 self.create_affecting_node_name(parties=[]),
                 self.contour(self.text_below),
             )
@@ -290,7 +299,7 @@ class Separator(ProtocolStep):
         src = self.get_pos(self.protocol.parties[0].column, self.line)
         dest = self.get_pos(self.protocol.parties[-1].column, self.line)
         out = fr"""%% draw separator line
-        \draw[annex_separator] ({src}) to  ({dest});"""
+        \draw[annex_separator{self.tikz_extra_style}] ({src}) to  ({dest});"""
         out += super().tikz_arrows()
         return out
 

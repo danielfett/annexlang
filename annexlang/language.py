@@ -30,7 +30,7 @@ class HTTPRequest(ProtocolStep):
         src = self.get_pos(self.src.column, self.line)
         dest = self.get_pos(self.dest.column, self.line)
         return fr"""%% draw http {self.type}
-        \draw[annex_http_{self.type}] ({src}) to {self.tikz_above} {self.tikz_below} ({dest});"""
+        \draw[annex_http_{self.type}{self.tikz_extra_style}] ({src}) to {self.tikz_above} {self.tikz_below} ({dest});"""
 
     @property
     def height(self):
@@ -54,10 +54,55 @@ class HTTPResponse(HTTPRequest):
     def _init(self, *args, **kwargs):
         super()._init(*args, **kwargs)
         self.text_above = " ".join((self.code, self.headers, )).strip()
-        if not self.text_above:
+        if not self.text_above and not self.skip_number:
             self.text_above = 'Response'
         self.text_below = self.parameters
-        
+
+
+class HTTPRequestResponse(HTTPRequest):
+    yaml_tag = '!http-request-response'
+    type = "request_response"
+
+    def tikz_arrows(self):
+        src = self.get_pos(self.src.column, self.line)
+        dest = self.get_pos(self.dest.column, self.line)
+        return fr"""%% draw http {self.type}
+        \draw[annex_http_request,transform canvas={{yshift=0.25ex}}{self.tikz_extra_style}] ({src}) to {self.tikz_above} ({dest});
+        \draw[annex_http_response,transform canvas={{yshift=-0.25ex}}{self.tikz_extra_style}] ({dest}) to {self.tikz_below} ({src});"""
+
+
+class PostMessage(ProtocolStep):
+    yaml_tag = '!postmessage'
+    body = ""
+    id_above = True
+    text_style = "annex_postmessage_text"
+
+    def _init(self, *args, **kwargs):
+        super()._init(*args, **kwargs)
+        self.text_above = self.body
+        self._affecting_nodes = [
+            self.get_pos(self.src.column, self.line),
+            self.get_pos(self.dest.column, self.line)
+        ]
+
+    @property
+    def affected_parties(self):
+        yield self.src
+        yield self.dest
+    
+    def tikz_arrows(self):
+        src = self.get_pos(self.src.column, self.line)
+        dest = self.get_pos(self.dest.column, self.line)
+        return fr"""%% draw postmessage
+        \draw[annex_postmessage{self.tikz_extra_style}] ({src}) to {self.tikz_above} ({dest});"""
+
+    @property
+    def height(self):
+        if self.tikz_above:
+            return "4ex", "south,yshift=-1ex"
+        else:
+            return "1ex", "center"
+
 
 class Action(ProtocolStep):
     yaml_tag = '!action'
@@ -69,7 +114,7 @@ class Action(ProtocolStep):
     def tikz(self):
         pos = self.get_pos(self.party.column, self.line)
         text = self.tex_id + self.contour(self.label)
-        out = fr"""\node[annex_action,name={self.node_name}] at ({pos}) {{{text}}};"""
+        out = fr"""\node[annex_action,name={self.node_name}{self.tikz_extra_style}] at ({pos}) {{{text}}};"""
         return out
 
     @property
@@ -94,7 +139,7 @@ class ScriptAction(Action):
         self.text_above = self.data
         rev = "_reversed" if getattr(self, 'reversed', False) else ''
         return fr"""%% draw open window arrow
-        \draw[annex_script_action_arrow{rev}] ({self.node_name}.{direction}) to  {self.tikz_above} ({dest});"""
+        \draw[annex_script_action_arrow{rev}{self.tikz_extra_style}] ({self.node_name}.{direction}) to  {self.tikz_above} ({dest});"""
 
     @property
     def height(self):
@@ -159,7 +204,7 @@ class OpenWindowStartParty(StartParty):
         src = self.get_pos(self.src.column, self.line)
         self.text_above = "open"
         out = fr"""%% draw open window arrow
-        \draw[annex_open_window_start_party_arrow] ({src}) to  {self.tikz_above} ({self.node_name}.{direction});"""
+        \draw[annex_open_window_start_party_arrow{self.tikz_extra_style}] ({src}) to  {self.tikz_above} ({self.node_name}.{direction});"""
         out += super().tikz_arrows()
         return out
     
