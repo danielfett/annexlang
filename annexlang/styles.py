@@ -14,6 +14,7 @@ class StyleDefault(yaml.YAMLObject):
     annex_matrix_dummy_height/.style={},
     % default style used below
     line/.style={draw=yellow!50!green},
+    seperatorline/.style={draw=blue},
     % groups
     annex_group_box/.style={draw=black!50,dashed,rounded corners=1ex},
     annex_group_title_placeholder/.style={},
@@ -33,6 +34,7 @@ class StyleDefault(yaml.YAMLObject):
     annex_open_window_start_party_box/.style={annex_start_party_box},
     annex_open_window_start_party_arrow/.style={->,line,dashed},
     annex_comment_text/.style={font=\bffamily},
+    annex_separator/.style={seperatorline,dashed},
     """
 
 class StyleDebug(yaml.YAMLObject):
