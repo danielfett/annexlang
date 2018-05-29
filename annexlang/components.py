@@ -86,7 +86,8 @@ class ProtocolStep(ProtocolObject):
             return ""
         else:
             text = r"\contour{white}{%s}" % self.text_below
-            return r"""node [annex_arrow_text,below=8pt,anchor=base](%s){%s}""" % (
+            return r"""node [%s,below=8pt,anchor=base](%s){%s}""" % (
+                getattr(self, 'text_style', 'annex_arrow_text'),
                 self.create_affecting_node_name(parties=[]),
                 self.contour(self.text_below),
             )
@@ -306,6 +307,7 @@ class Comment(ProtocolStep):
     yaml_tag = '!comment'
     id_above = False
     skip_number = True
+    text_style = 'annex_comment_text'
 
     def tikz_arrows(self):
         src = self.get_pos(self.protocol.parties[0].column, self.line)
@@ -318,7 +320,7 @@ class Comment(ProtocolStep):
     
     @property
     def height(self):
-        return "2ex", "center,yshift=-1ex"
+        return "3ex", "center,yshift=-2ex"
     
     @property
     def affected_parties(self):

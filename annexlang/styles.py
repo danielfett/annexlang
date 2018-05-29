@@ -32,6 +32,7 @@ class StyleDefault(yaml.YAMLObject):
     annex_script_action_arrow_reversed/.style={<-,line},
     annex_open_window_start_party_box/.style={annex_start_party_box},
     annex_open_window_start_party_arrow/.style={->,line,dashed},
+    annex_comment_text/.style={font=\bffamily},
     """
 
 class StyleDebug(yaml.YAMLObject):
