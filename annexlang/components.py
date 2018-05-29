@@ -49,6 +49,7 @@ class ProtocolStep(ProtocolObject):
     skip_number = 0
     text_style = "annex_arrow_text"
     _affecting_nodes = []
+    style = ""
     
     def length(self):
         return 1
@@ -69,6 +70,12 @@ class ProtocolStep(ProtocolObject):
         if not text:
             return ''
         return r"\contour{white}{%s}" % text
+
+    @cached_property
+    def tikz_extra_style(self):
+        if self.style:
+            return f",{self.style}"
+        return ""
 
     @cached_property
     def tikz_above(self):
@@ -292,7 +299,7 @@ class Separator(ProtocolStep):
         src = self.get_pos(self.protocol.parties[0].column, self.line)
         dest = self.get_pos(self.protocol.parties[-1].column, self.line)
         out = fr"""%% draw separator line
-        \draw[annex_separator] ({src}) to  ({dest});"""
+        \draw[annex_separator{self.tikz_extra_style}] ({src}) to  ({dest});"""
         out += super().tikz_arrows()
         return out
 
