@@ -33,6 +33,8 @@ class StyleDefault(yaml.YAMLObject):
     annex_script_action_arrow_reversed/.style={<-,line},
     annex_open_window_start_party_box/.style={annex_start_party_box},
     annex_open_window_start_party_arrow/.style={->,line,dashed},
+    annex_close_window_end_party_box/.style={annex_end_party_box},
+    annex_close_window_end_party_arrow/.style={->,line,dashed},
     annex_separator/.style={seperatorline,dashed},
     % text styles
     annex_arrow_text/.style={font=\sffamily\tiny},
