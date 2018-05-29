@@ -57,7 +57,39 @@ class HTTPResponse(HTTPRequest):
         if not self.text_above:
             self.text_above = 'Response'
         self.text_below = self.parameters
-        
+
+
+class PostMessage(ProtocolStep):
+    yaml_tag = '!postmessage'
+    body = ""
+    id_above = True
+
+    def _init(self, *args, **kwargs):
+        super()._init(*args, **kwargs)
+        self.text_above = self.body
+        self._affecting_nodes = [
+            self.get_pos(self.src.column, self.line),
+            self.get_pos(self.dest.column, self.line)
+        ]
+
+    @property
+    def affected_parties(self):
+        yield self.src
+        yield self.dest
+    
+    def tikz_arrows(self):
+        src = self.get_pos(self.src.column, self.line)
+        dest = self.get_pos(self.dest.column, self.line)
+        return fr"""%% draw postmessage
+        \draw[annex_postmessage] ({src}) to {self.tikz_above} ({dest});"""
+
+    @property
+    def height(self):
+        if self.tikz_above:
+            return "4ex", "south,yshift=-1ex"
+        else:
+            return "1ex", "center"
+
 
 class Action(ProtocolStep):
     yaml_tag = '!action'

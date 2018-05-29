@@ -26,6 +26,7 @@ class StyleDefault(yaml.YAMLObject):
     annex_arrow_text/.style={font=\sffamily\tiny},
     annex_http_request/.style={-Latex,line,draw=purple},
     annex_http_response/.style={-Latex[open],line,draw=purple},
+    annex_postmessage/.style={->,line,dashed,draw=red},
     annex_action/.style={fill=white,inner sep=0ex,minimum height=1.5em},
     annex_open_window/.style={->,line,dashed},
     annex_script_action_box/.style={annex_action,anchor=center},
