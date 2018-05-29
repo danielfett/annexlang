@@ -227,9 +227,12 @@ protocol:
   - !http-request
     src: *b1d
     dest: *b2d
+  - !comment
+    label: "Manually set step counter:"
   - !http-request
     dest: *b1d
     src: *b2d
+    counter: 1337
   - !my-custom-action # custom action, see annex_custom.py
     party: *idp2
 # FINISH UP

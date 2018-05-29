@@ -1,10 +1,23 @@
 import yaml
-from itertools import chain, count
+from itertools import chain
 import re
 
 object_counter = 0
 
 
+# We use this counter to number the protocol steps. The counter can be manually set to a different value.
+def count(start=0, step=1):
+    # count(10) --> 10 11 12 13 14 ...
+    # count(2.5, 0.5) -> 2.5 3.0 3.5 ...
+    n = start
+    while True:
+        new_val = yield n
+        if new_val:
+            n = new_val
+        else:
+            n += step
+
+            
 class cached_property(object):
     """
     Descriptor (non-data) for building an attribute on-demand on first use.
@@ -50,6 +63,7 @@ class ProtocolStep(ProtocolObject):
     text_style = "annex_arrow_text"
     _affecting_nodes = []
     style = ""
+    counter = None  # manually set number of this protocol step, if any
     
     def length(self):
         return 1
@@ -115,7 +129,7 @@ class ProtocolStep(ProtocolObject):
     def _init(self, protocol, counter, skip_number):
         self.protocol = protocol
         if not self.skip_number and not skip_number:
-            self.counter = next(counter)
+            self.counter = counter.send(self.counter)
         
 
     @cached_property
@@ -232,7 +246,9 @@ class Protocol(Serial):
         for p, column in zip(self.parties, range(len(self.parties))):
             p.column = column
 
-        self._init(self, count(start=1, step=1), False)
+        step_counter = count(start=0, step=1)
+        next(step_counter)  # initialize counter, it is now at 1
+        self._init(self, step_counter, False)
 
         last_starts = {}
         for step in self.walk():
