@@ -1,7 +1,8 @@
-\documentclass{scrartcl}
+\documentclass[a3paper]{scrartcl}
 \usepackage{fontawesome}
 \usepackage{tikz}
 \usepackage{url}
+\usepackage{fullpage}
 \usetikzlibrary{fit,positioning,arrows.meta,decorations.pathreplacing}
 \usepackage[outline]{contour}
 
@@ -12,6 +13,22 @@
 
 
 \begin{document}
+\section*{The Unicorn Protocol}
+Figure~\ref{fig:unicorn} shows the unicorn protocol, which for now
+serves as the documentation of the Annex language.
+Step~\refprotostep{unicorn:some-request} is just as fictional as
+Step~\refprotostep{unicorn:some-response}. We can refer to whole
+groups of steps as well (\refprotostep{unicorn:condensed}).
 
-\input{demo.yml.tex}
+\begin{figure}[h!]
+  \centering  
+  \input{demo.yml.tex}
+  \caption{The Unicorn protocol, showing off some features of Annex.
+    The protocol flow, all names, messages, and URLs portrayed in this
+    chart are fictitious. No identification with actual protocols (in
+    production or deprecated), deployments, and products is intended
+    or should be inferred. No unicorns were harmed in the making of
+    this protocol diagram.}
+  \label{fig:unicorn}
+\end{figure}
 \end{document}

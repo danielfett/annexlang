@@ -1,5 +1,5 @@
 options:
-  enumerate: "\\setcounter{protostep}{%d}\\protostep{%s} "
+  enumerate: "\\setcounter{protostep}{%d}\\protostep{unicorn:%s} "
   colsep: 0.15\textwidth
   rowsep: 0.5ex
   styles:
@@ -72,8 +72,10 @@ protocol:
            src: *b1d
            dest: *example
            method: GET
+           id: some-request
          - !http-response
            reply_to: *get_doc_1
+           id: some-response
          - !action
            label: $\mathtt{CREATE\_PEER\_CONNECTION}$
            party: *b1d
@@ -104,6 +106,7 @@ protocol:
            
       - !Serial # in browser 2
         condense: west
+        id: condensed
         steps:
         - !http-request &get_doc_3
           src: *b2d

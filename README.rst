@@ -13,4 +13,5 @@ To convert a file from Annex to TeX, just run
 
     annex-convert infile.yml outfile.tex
 
-
+If you use a chart generated with Annex in your publication, please
+include a notice (e.g., "Chart generated with Annex.") somewhere. 
