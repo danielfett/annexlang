@@ -234,31 +234,32 @@ class Serial(MultiStep):
     def apply_lifeline_style(self):
         block_start = self.line * 2
         block_end = (self.line + self.length - 1) * 2
-        for step in self.protocol.walk(): # TODO: we need to walk over the whole protocol!!!!
-            if getattr(step, 'lifeline_segments', False):
-                for i,segment in zip(range(len(step.lifeline_segments)), step.lifeline_segments):
-                    segment_start = segment[0]
-                    segment_end = segment[1]
-                    if segment_end <= block_start or segment_start >= block_end:
-                        continue
+        for step in self.protocol.walk():  # TODO: we need to walk over the whole protocol!!!!
+            if not hasattr(step, 'lifeline_segments'):
+                continue
+            for i, segment in zip(range(len(step.lifeline_segments)), step.lifeline_segments):
+                segment_start = segment[0]
+                segment_end = segment[1]
+                if segment_end <= block_start or segment_start >= block_end:
+                    continue
 
-                    if segment[2] == self.lifeline_style:
-                        # segment does not need to be split up
-                        continue
-                    
-                    # block affects segment -> split segment
-                    if block_start > segment_start and block_end >= segment_end:
-                        # block affects the end of segment
-                        step.lifeline_segments = step.lifeline_segments[:i] + [(segment_start, block_start-1, segment[2]), (block_start-1, segment_end, self.lifeline_style)]
-                    elif block_start <= segment_start and block_end < segment_end:
-                        # block affects start of segment
-                        step.lifeline_segments = [(segment_start, block_end + 1, self.lifeline_style), (block_end + 1, segment_end, segment[2])] + step.lifeline_segments[i+1:]
-                    elif block_start <= segment_start and block_end >= segment_end:
-                        # block affects whole segment
-                        step.lifeline_segments = [(segment_start, segment_end, self.lifeline_style)]
-                    elif block_start > segment_start and block_end < segment_end:
-                        # block affects middle of segment
-                        step.lifeline_segments = step.lifeline_segments[:i] + [(segment_start, block_start - 1, segment[2]), (block_start - 1, block_end + 1, self.lifeline_style), (block_end + 1, segment_end, segment[2])] + step.lifeline_segments[i+1:]
+                if segment[2] == self.lifeline_style:
+                    # segment does not need to be split up
+                    continue
+
+                # block affects segment -> split segment
+                if block_start > segment_start and block_end >= segment_end:
+                    # block affects the end of segment
+                    step.lifeline_segments = step.lifeline_segments[:i] + [(segment_start, block_start-1, segment[2]), (block_start-1, segment_end, self.lifeline_style)]
+                elif block_start <= segment_start and block_end < segment_end:
+                    # block affects start of segment
+                    step.lifeline_segments = [(segment_start, block_end + 1, self.lifeline_style), (block_end + 1, segment_end, segment[2])] + step.lifeline_segments[i+1:]
+                elif block_start <= segment_start and block_end >= segment_end:
+                    # block affects whole segment
+                    step.lifeline_segments = [(segment_start, segment_end, self.lifeline_style)]
+                elif block_start > segment_start and block_end < segment_end:
+                    # block affects middle of segment
+                    step.lifeline_segments = step.lifeline_segments[:i] + [(segment_start, block_start - 1, segment[2]), (block_start - 1, block_end + 1, self.lifeline_style), (block_end + 1, segment_end, segment[2])] + step.lifeline_segments[i+1:]
 
 
 class Protocol(Serial):
