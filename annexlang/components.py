@@ -129,20 +129,19 @@ class ProtocolStep(ProtocolObject):
     def _init(self, protocol, counter, skip_number):
         self.protocol = protocol
         if not self.skip_number and not skip_number:
-            self.counter = counter.send(self.counter)
-
+            self._counter = counter.send(self.counter)
 
     @cached_property
     def tex_id(self):
         if not self.protocol.options['enumerate']:
             return ''
-        if self.skip_number or not hasattr(self, 'counter'):
+        if self.skip_number or not hasattr(self, '_counter'):
             return ''
         if hasattr(self, 'id'):
             t = self.id
         else:
             t = self.annexid
-        return self.protocol.options['enumerate'] % (self.counter - 1, t)
+        return self.protocol.options['enumerate'] % (self._counter - 1, t)
 
     def set_line(self, line):
         self.line = line
