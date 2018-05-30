@@ -138,7 +138,7 @@ class ScriptAction(Action):
         dest = self.get_pos(self.dest.column, self.line)
         self.text_above = self.data
         rev = "_reversed" if getattr(self, 'reversed', False) else ''
-        return fr"""%% draw open window arrow
+        return fr"""%% draw script action arrow
         \draw[annex_script_action_arrow{rev}{self.tikz_extra_style}] ({self.node_name}.{direction}) to  {self.tikz_above} ({dest});"""
 
     @property
@@ -179,14 +179,14 @@ class StartParty(EndParty):
     type = 'start_party'
     endsparty = False
     startsparty = True
-     
+    lifeline_segments = []
+
     def tikz_arrows(self):
-        src = self.get_pos(self.party.column, self.line)
-        dest = self.get_pos(self.party.column, self.end.line)
-        out = r"""\draw[annex_lifeline] (%(src)s) -- (%(dest)s);""" % {
-            'src': src,
-            'dest': dest,
-        }
+        out = ""
+        for segment in self.lifeline_segments:
+            src = self.get_pos(self.party.column, segment[0])
+            dest = self.get_pos(self.party.column, segment[1])
+            out += fr"""\draw[{segment[2]}] ({src}) -- ({dest});"""
         return out
 
 
