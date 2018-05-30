@@ -9,6 +9,7 @@ options:
       style: |
         server/.style={draw=white,fill=black,text=white},
         xhr/.style={draw=blue},
+        annex_lifeline_dashed/.style={annex_lifeline,dotted,thick},
 protocol:
   !Protocol
   parties:
@@ -121,14 +122,14 @@ protocol:
           src: *b2d
           dest: *b2i
         - !http-request &get_doc_4
-            src: *b2i
-            dest: *idp2
-            method: GET
-            url: /.wk/idp-proxy
-            style: xhr
+          src: *b2i
+          dest: *idp2
+          method: GET
+          url: /.wk/idp-proxy
+          style: xhr
         - !http-response
-            reply_to: *get_doc_4
-            style: xhr
+          reply_to: *get_doc_4
+          style: xhr
         - !postmessage
           dest: *b2i
           src: *b2d
@@ -148,21 +149,24 @@ protocol:
     src: *b1d
     dest: *example
     parameters: $\mathit{offer}$
-  - !http-request
-    src: *example
-    dest: *b2d
-    parameters: $\mathit{offer}$
-  - !action
-    label: $\mathtt{GET\_OFFER\_SET\_ANSWER}$
-    party: *b2d
-  - !http-request
-    src: *b2d
-    dest: *example
-    parameters: $\mathit{answer}$
-  - !http-request
-    src: *example
-    dest: *b1d
-    parameters: $\mathit{answer}$
+  - !Serial
+    lifeline_style: annex_lifeline_dashed
+    steps:
+      - !http-request
+        src: *example
+        dest: *b2d
+        parameters: $\mathit{offer}$
+      - !action
+        label: $\mathtt{GET\_OFFER\_SET\_ANSWER}$
+        party: *b2d
+      - !http-request
+        src: *b2d
+        dest: *example
+        parameters: $\mathit{answer}$
+      - !http-request
+        src: *example
+        dest: *b1d
+        parameters: $\mathit{answer}$
 # VERIFICATION
   - !Parallel
     steps:

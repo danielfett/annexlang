@@ -130,7 +130,7 @@ class ProtocolStep(ProtocolObject):
         self.protocol = protocol
         if not self.skip_number and not skip_number:
             self.counter = counter.send(self.counter)
-        
+
 
     @cached_property
     def tex_id(self):
@@ -222,6 +222,7 @@ class Parallel(MultiStep):
 class Serial(MultiStep):
     yaml_tag = '!Serial'
     length_fun = sum
+    lifeline_style = "annex_lifeline"
     
     def set_line(self, line):
         length = 0
@@ -230,7 +231,36 @@ class Serial(MultiStep):
         self.line = line
         self.length = length
         return length
-    
+
+    def apply_lifeline_style(self):
+        block_start = self.line * 2
+        block_end = (self.line + self.length - 1) * 2
+        for step in self.protocol.walk(): # TODO: we need to walk over the whole protocol!!!!
+            if getattr(step, 'lifeline_segments', False):
+                for i,segment in zip(range(len(step.lifeline_segments)), step.lifeline_segments):
+                    segment_start = segment[0]
+                    segment_end = segment[1]
+                    if segment_end <= block_start or segment_start >= block_end:
+                        continue
+
+                    if segment[2] == self.lifeline_style:
+                        # segment does not need to be split up
+                        continue
+                    
+                    # block affects segment -> split segment
+                    if block_start > segment_start and block_end >= segment_end:
+                        # block affects the end of segment
+                        step.lifeline_segments = step.lifeline_segments[:i] + [(segment_start, block_start-1, segment[2]), (block_start-1, segment_end, self.lifeline_style)]
+                    elif block_start <= segment_start and block_end < segment_end:
+                        # block affects start of segment
+                        step.lifeline_segments = [(segment_start, block_end + 1, self.lifeline_style), (block_end + 1, segment_end, segment[2])] + step.lifeline_segments[i+1:]
+                    elif block_start <= segment_start and block_end >= segment_end:
+                        # block affects whole segment
+                        step.lifeline_segments = [(segment_start, segment_end, self.lifeline_style)]
+                    elif block_start > segment_start and block_end < segment_end:
+                        # block affects middle of segment
+                        step.lifeline_segments = step.lifeline_segments[:i] + [(segment_start, block_start - 1, segment[2]), (block_start - 1, block_end + 1, self.lifeline_style), (block_end + 1, segment_end, segment[2])] + step.lifeline_segments[i+1:]
+
 
 class Protocol(Serial):
     yaml_tag = '!Protocol'
@@ -250,6 +280,7 @@ class Protocol(Serial):
         next(step_counter)  # initialize counter, it is now at 1
         self._init(self, step_counter, False)
 
+        # determine start and end points of lifelines
         last_starts = {}
         for step in self.walk():
             if getattr(step, 'startsparty', False):
@@ -260,9 +291,15 @@ class Protocol(Serial):
                 if step.party not in last_starts:
                     raise Exception("Ended party that was not started: " + repr(step.party))
                 last_starts[step.party].end = step
+                last_starts[step.party].lifeline_segments = [(last_starts[step.party].line * 2, step.line * 2, "annex_lifeline")]
                 del last_starts[step.party]
         if len(last_starts):
             raise Exception("Party was started but not ended: " + repr(last_starts))
+        # apply lifeline styles
+        for step in self.walk():
+            if getattr(step, 'lifeline_style', False):
+                step.apply_lifeline_style()
+
 
     @property
     def has_groups(self):
