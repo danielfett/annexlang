@@ -184,8 +184,20 @@ class StartParty(EndParty):
     def tikz_arrows(self):
         out = ""
         for segment in self.lifeline_segments:
-            src = self.get_pos(self.party.column, segment[0])
-            dest = self.get_pos(self.party.column, segment[1])
+            if segment[0] % 2 == 1:
+                node_above = self.get_pos(self.party.column, segment[0] // 2)
+                node_below = self.get_pos(self.party.column, segment[0] // 2 + 1)
+                out += fr"""\node ({node_above}-half) at ($({node_above})!0.5!({node_below})$) {{}};"""
+                src = fr"""{node_above}-half"""
+            else:
+                src = self.get_pos(self.party.column, segment[0] // 2)
+            if segment[1] % 2 == 1:
+                node_above = self.get_pos(self.party.column, segment[1] // 2)
+                node_below = self.get_pos(self.party.column, segment[1] // 2 + 1)
+                out += fr"""\node ({node_above}-half) at ($({node_above})!0.5!({node_below})$) {{}};"""
+                dest = fr"""{node_above}-half"""
+            else:
+                dest = self.get_pos(self.party.column, segment[1] // 2)
             out += fr"""\draw[{segment[2]}] ({src}) -- ({dest});"""
         return out
 
