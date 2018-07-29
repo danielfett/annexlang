@@ -6,7 +6,7 @@ class HTTPRequest(ProtocolStep):
     method = ""
     url = ""
     parameters = ""
-    type = "request"
+    type = "http_request"
     id_above = True
 
     def _init(self, *args, **kwargs):
@@ -29,8 +29,8 @@ class HTTPRequest(ProtocolStep):
     def tikz_arrows(self):
         src = self.get_pos(self.src.column, self.line)
         dest = self.get_pos(self.dest.column, self.line)
-        return fr"""%% draw http {self.type}
-        \draw[annex_http_{self.type}{self.tikz_extra_style}] ({src}) to {self.tikz_above} {self.tikz_below} ({dest});"""
+        return fr"""%% draw {self.type}
+        \draw[annex_{self.type}{self.tikz_extra_style}] ({src}) to {self.tikz_above} {self.tikz_below} ({dest});"""
 
     @property
     def height(self):
@@ -48,8 +48,7 @@ class HTTPResponse(HTTPRequest):
     yaml_tag = '!http-response'
     code = ""
     headers = ""
-    type = "response"
-    id_above = True
+    type = "http_response"
     
     def _init(self, *args, **kwargs):
         super()._init(*args, **kwargs)
@@ -59,6 +58,16 @@ class HTTPResponse(HTTPRequest):
         self.text_below = self.parameters
 
 
+class Websocket(HTTPRequest):
+    yaml_tag = '!websocket'
+    type = "websocket"
+
+    def _init(self, *args, **kwargs):
+        super()._init(*args, **kwargs)
+        self.text_above = "WebSocket"
+        self.text_below = self.parameters
+    
+
 class HTTPRequestResponse(HTTPRequest):
     yaml_tag = '!http-request-response'
     type = "request_response"
@@ -66,7 +75,7 @@ class HTTPRequestResponse(HTTPRequest):
     def tikz_arrows(self):
         src = self.get_pos(self.src.column, self.line)
         dest = self.get_pos(self.dest.column, self.line)
-        return fr"""%% draw http {self.type}
+        return fr"""%% draw {self.type}
         \draw[annex_http_request,transform canvas={{yshift=0.25ex}}{self.tikz_extra_style}] ({src}) to {self.tikz_above} ({dest});
         \draw[annex_http_response,transform canvas={{yshift=-0.25ex}}{self.tikz_extra_style}] ({dest}) to {self.tikz_below} ({src});"""
 
