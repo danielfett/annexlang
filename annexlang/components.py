@@ -273,8 +273,15 @@ class Protocol(Serial):
         self.set_line(1 if self.has_groups else 0)
 
         # Set column numbers for parties
-        for p, column in zip(self.parties, range(len(self.parties))):
-            p.column = column
+        col = 0
+        for p in self.parties:
+            if p.column == None:
+                p.column = col
+                col += 1
+        for p in self.parties:
+            if isinstance(p.column, Party):
+                p.column = p.column.column
+        
 
         step_counter = count(start=0, step=1)
         next(step_counter)  # initialize counter, it is now at 1
@@ -309,6 +316,7 @@ class Protocol(Serial):
 class Party(ProtocolObject):
     yaml_tag = '!Party'
     style = ''
+    column = None
 
     def add_affecting_node(self, node):
         if hasattr(self, '_affecting_nodes'):
