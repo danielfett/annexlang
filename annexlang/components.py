@@ -390,7 +390,7 @@ class Comment(ProtocolStep):
     
     @property
     def height(self):
-        return "3ex", "center,yshift=-2ex"
+        return "3ex", "center,yshift=-1ex"
     
     @property
     def affected_parties(self):
