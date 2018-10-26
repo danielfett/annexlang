@@ -78,6 +78,18 @@ class HTTPRequestResponse(HTTPRequest):
         return fr"""%% draw {self.type}
         \draw[annex_http_request,transform canvas={{yshift=0.25ex}}{self.tikz_extra_style}] ({src}) to {self.tikz_above} ({dest});
         \draw[annex_http_response,transform canvas={{yshift=-0.25ex}}{self.tikz_extra_style}] ({dest}) to {self.tikz_below} ({src});"""
+    
+    
+class HTTPResponseRequest(HTTPRequest):
+    yaml_tag = '!http-response-request'
+    type = "response_request"
+
+    def tikz_arrows(self):
+        src = self.get_pos(self.src.column, self.line)
+        dest = self.get_pos(self.dest.column, self.line)
+        return fr"""%% draw {self.type}
+        \draw[annex_http_response,transform canvas={{yshift=0.25ex}}{self.tikz_extra_style}] ({dest}) to {self.tikz_above} ({src});
+        \draw[annex_http_request,transform canvas={{yshift=-0.25ex}}{self.tikz_extra_style}] ({src}) to {self.tikz_below} ({dest});"""
 
 
 class PostMessage(ProtocolStep):
