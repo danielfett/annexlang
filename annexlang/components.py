@@ -108,12 +108,18 @@ class ProtocolStep(ProtocolObject):
         if not self.text_below:
             return ""
         else:
-            text = r"\contour{white}{%s}" % self.text_below
-            return r"""node [%s,below=8pt,anchor=base](%s){%s}""" % (
-                self.text_style,
-                self.create_affecting_node_name(parties=[]),
-                self.contour(self.text_below),
-            )
+            line_counter = 0
+            out = ""
+            for line in self.lines_below:
+                pos = "8pt" + ("+8pt" * line_counter)
+                out += r"""node [%s,below=%s,anchor=base](%s){%s} """ % (
+                    self.text_style,
+                    pos,
+                    self.create_affecting_node_name(parties=[]),
+                    self.contour(line),
+                )
+                line_counter += 1
+            return out
 
     def create_affecting_node_name(self, parties=None):
         name = f"{self.annexid}_{self.node_name_counter}"
@@ -157,6 +163,10 @@ class ProtocolStep(ProtocolObject):
     @property
     def affecting_nodes(self):
         return list(self._affecting_nodes)
+
+    @property
+    def lines_below(self):
+        return self.text_below.strip().split("\n")
         
     
 class MultiStep(ProtocolStep):

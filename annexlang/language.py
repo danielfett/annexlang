@@ -35,11 +35,11 @@ class HTTPRequest(ProtocolStep):
     @property
     def height(self):
         if self.tikz_above and self.tikz_below:
-            return "6ex", "center"
+            return "4ex" + ("+2ex" * len(self.lines_below)), "north,yshift=3ex"
         elif self.tikz_above:
             return "4ex", "south,yshift=-1ex"
         elif self.tikz_below:
-            return "4ex", "north,yshift=1ex"
+            return "2ex" + ("+2ex" * len(self.lines_below)), "north,yshift=1ex"
         else:
             return "1ex", "center"
     
