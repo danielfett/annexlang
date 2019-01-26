@@ -36,7 +36,9 @@ class TikzPicture:
         matrix_dummy_heights = [[] for i in range(lines + line_offset)]
 
         for step in self.protocol.walk():
-            if hasattr(step, 'height'):
+            if hasattr(step, 'height_overwrite'):
+                matrix_dummy_heights[step.line].append(step.height_overwrite)
+            elif hasattr(step, 'height'):
                 matrix_dummy_heights[step.line].append(step.height)
 
         f.write(r"""

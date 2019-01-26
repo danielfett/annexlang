@@ -95,12 +95,14 @@ class HTTPResponseRequest(HTTPRequest):
 class PostMessage(ProtocolStep):
     yaml_tag = '!postmessage'
     body = ""
+    comment = ""
     id_above = True
     text_style = "annex_postmessage_text"
 
     def _init(self, *args, **kwargs):
         super()._init(*args, **kwargs)
         self.text_above = self.body
+        self.text_below = self.comment
         self._affecting_nodes = [
             self.get_pos(self.src.column, self.line),
             self.get_pos(self.dest.column, self.line)
@@ -115,12 +117,21 @@ class PostMessage(ProtocolStep):
         src = self.get_pos(self.src.column, self.line)
         dest = self.get_pos(self.dest.column, self.line)
         return fr"""%% draw postmessage
-        \draw[annex_postmessage{self.tikz_extra_style}] ({src}) to {self.tikz_above} ({dest});"""
+        \draw[annex_postmessage{self.tikz_extra_style}] ({src}) to {self.tikz_above} {self.tikz_below} ({dest});"""
 
+#    def height(self):
+#        if self.tikz_above:
+#            return "4ex", "south,yshift=-1ex"
+#        else:
+#            return "1ex", "center"
     @property
     def height(self):
-        if self.tikz_above:
+        if self.tikz_above and self.tikz_below:
+            return "4ex" + ("+2ex" * len(self.lines_below)), "north,yshift=3ex"
+        elif self.tikz_above:
             return "4ex", "south,yshift=-1ex"
+        elif self.tikz_below:
+            return "2ex" + ("+2ex" * len(self.lines_below)), "north,yshift=1ex"
         else:
             return "1ex", "center"
 
@@ -140,7 +151,8 @@ class Action(ProtocolStep):
 
     @property
     def height(self):
-        return "3ex", "center"
+        h = 1 + 2 * len(self.label.split("\\\\"))
+        return f"{h}ex", "center"
 
     
 class ScriptAction(Action):

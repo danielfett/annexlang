@@ -81,6 +81,9 @@ class ProtocolStep(ProtocolObject):
         return ''
 
     def contour(self, text):
+        c = getattr(self, 'draw_contour', True)
+        if not c:
+            return text
         if not text:
             return ''
         return r"\contour{white}{%s}" % text
