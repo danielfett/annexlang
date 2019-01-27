@@ -42,7 +42,12 @@ class HTTPRequest(ProtocolStep):
             return "2ex" + ("+2ex" * len(self.lines_below)), "north,yshift=1ex"
         else:
             return "1ex", "center"
-    
+
+
+class XHRRequest(HTTPRequest):
+    yaml_tag = '!xhr-request'
+    type = "xhr_request"
+
 
 class HTTPResponse(HTTPRequest):
     yaml_tag = '!http-response'
@@ -58,6 +63,11 @@ class HTTPResponse(HTTPRequest):
         self.text_below = self.parameters
 
 
+class XHRResponse(HTTPResponse):
+    yaml_tag = '!xhr-response'
+    type = "xhr_response"
+
+
 class Websocket(HTTPRequest):
     yaml_tag = '!websocket'
     type = "websocket"
@@ -71,25 +81,43 @@ class Websocket(HTTPRequest):
 class HTTPRequestResponse(HTTPRequest):
     yaml_tag = '!http-request-response'
     type = "request_response"
+    type_above = 'http_request'
+    type_below = 'http_response'
 
     def tikz_arrows(self):
         src = self.get_pos(self.src.column, self.line)
         dest = self.get_pos(self.dest.column, self.line)
         return fr"""%% draw {self.type}
-        \draw[annex_http_request,transform canvas={{yshift=0.25ex}}{self.tikz_extra_style}] ({src}) to {self.tikz_above} ({dest});
-        \draw[annex_http_response,transform canvas={{yshift=-0.25ex}}{self.tikz_extra_style}] ({dest}) to {self.tikz_below} ({src});"""
-    
-    
+        \draw[annex_{self.type_above},transform canvas={{yshift=0.25ex}}{self.tikz_extra_style}] ({src}) to {self.tikz_above} ({dest});
+        \draw[annex_{self.type_below},transform canvas={{yshift=-0.25ex}}{self.tikz_extra_style}] ({dest}) to {self.tikz_below} ({src});"""
+
+
+class XHRRequestResponse(HTTPRequestResponse):
+    yaml_tag = '!xhr-request-response'
+    type = "xhr_request_response"
+    type_above = 'xhr_request'
+    type_below = 'xhr_response'
+
+
 class HTTPResponseRequest(HTTPRequest):
     yaml_tag = '!http-response-request'
     type = "response_request"
+    type_above = 'http_response'
+    type_below = 'http_request'
 
     def tikz_arrows(self):
         src = self.get_pos(self.src.column, self.line)
         dest = self.get_pos(self.dest.column, self.line)
         return fr"""%% draw {self.type}
-        \draw[annex_http_response,transform canvas={{yshift=0.25ex}}{self.tikz_extra_style}] ({dest}) to {self.tikz_above} ({src});
-        \draw[annex_http_request,transform canvas={{yshift=-0.25ex}}{self.tikz_extra_style}] ({src}) to {self.tikz_below} ({dest});"""
+        \draw[annex_{self.type_above},transform canvas={{yshift=0.25ex}}{self.tikz_extra_style}] ({dest}) to {self.tikz_above} ({src});
+        \draw[annex_{self.type_below},transform canvas={{yshift=-0.25ex}}{self.tikz_extra_style}] ({src}) to {self.tikz_below} ({dest});"""
+
+    
+class XHRResponseRequest(HTTPResponseRequest):
+    yaml_tag = '!xhr-request-response'
+    type = "xhr_request_response"
+    type_above = 'xhr_request'
+    type_below = 'xhr_response'
 
 
 class PostMessage(ProtocolStep):
@@ -233,6 +261,26 @@ class StartParty(EndParty):
                 dest = self.get_pos(self.party.column, segment[1] // 2)
             out += fr"""\draw[{segment[2]}] ({src}) -- ({dest});"""
         return out
+
+
+class DummyParty(ProtocolStep):
+    yaml_tag = '!dummy-party'
+    skip_number = True
+    dummyparty = True
+
+    def _init(self, *args, **kwargs):
+        super()._init(*args, **kwargs)
+        self.node_name = self.create_affecting_node_name()
+    
+#    def tikz(self):
+#        pos = self.get_pos(self.party.column, self.line)
+#        text = self.party.name
+#        out = fr"""\node[name={self.node_name},annex_{self.type}_box,{self.party.style}] at ({pos}) {{{text}}};"""
+#        return out
+#
+#    @property
+#    def height(self):
+#        return "5ex", "center"
 
 
 class OpenWindowStartParty(StartParty):

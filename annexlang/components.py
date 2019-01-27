@@ -303,7 +303,9 @@ class Protocol(Serial):
         # determine start and end points of lifelines
         last_starts = {}
         for step in self.walk():
-            if getattr(step, 'startsparty', False):
+            if getattr(step, 'dummyparty', False):
+                continue
+            elif getattr(step, 'startsparty', False):
                 if step.party in last_starts:
                     raise Exception("Started party that was already started: " + repr(step.party))
                 last_starts[step.party] = step
