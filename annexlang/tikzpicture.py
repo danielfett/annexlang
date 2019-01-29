@@ -50,15 +50,15 @@ class TikzPicture:
         # Draw the matrix (no real node contents yet)
         for line in range(len(matrix_dummy_heights)):
             for i in range(len(self.protocol.columns)): # we need to be able to refer to the following column, hence, we use this kind of iteration
-                col = self.protocol.columns[i] 
+                col = self.protocol.columns[i]
                 position = self.protocol.get_pos(i, line)
                 f.write(r"""\node[annex_matrix_node,inner sep=0,outer sep=0](%s){};""" % (position,))
                 
                 extrawidths = []
                 if 'extrawidth' in col:
-                    extrawidths.append(col.extrawidth + "/2")
+                    extrawidths.append(col['extrawidth'] + "/2")
                 if i < (len(self.protocol.columns) - 1) and hasattr(self.protocol.columns[i+1], 'extrawidth'):
-                    extrawidths.append(self.protocol.columns[i+1].extrawidth + "/2")
+                    extrawidths.append(self.protocol.columns[i+1]['extrawidth'] + "/2")
                 if i < (len(self.protocol.columns) - 1):
                     f.write(r""" &""" )
                     if extrawidths:

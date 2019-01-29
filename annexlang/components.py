@@ -292,9 +292,9 @@ class Protocol(Serial):
             if p.column == None:
                 p.column = len(self.columns)
                 if hasattr(p, 'extrawidth'):
-                    self.columns += {'num': len(self.columns), 'extrawidth': p.extrawidth}
+                    self.columns.append({'num': len(self.columns), 'extrawidth': p.extrawidth})
                 else:
-                    self.columns += {'num': len(self.columns)}
+                    self.columns.append({'num': len(self.columns)})
         for p in self.parties:
             if isinstance(p.column, Party):
                 p.column = p.column.column
