@@ -81,6 +81,9 @@ class ProtocolStep(ProtocolObject):
         return ''
 
     def contour(self, text):
+        c = getattr(self, 'draw_contour', True)
+        if not c:
+            return text
         if not text:
             return ''
         return r"\contour{white}{%s}" % text
@@ -276,6 +279,7 @@ class Protocol(Serial):
     yaml_tag = '!Protocol'
     extra_steps = []
     counter = 0
+    columns = []
 
     def init(self, options):
         self.options = options
@@ -283,11 +287,14 @@ class Protocol(Serial):
         self.set_line(1 if self.has_groups else 0)
 
         # Set column numbers for parties
-        col = 0
+        self.columns = []
         for p in self.parties:
             if p.column == None:
-                p.column = col
-                col += 1
+                p.column = len(self.columns)
+                if hasattr(p, 'extrawidth'):
+                    self.columns.append({'num': len(self.columns), 'extrawidth': p.extrawidth})
+                else:
+                    self.columns.append({'num': len(self.columns)})
         for p in self.parties:
             if isinstance(p.column, Party):
                 p.column = p.column.column
@@ -300,7 +307,9 @@ class Protocol(Serial):
         # determine start and end points of lifelines
         last_starts = {}
         for step in self.walk():
-            if getattr(step, 'startsparty', False):
+            if getattr(step, 'dummyparty', False):
+                continue
+            elif getattr(step, 'startsparty', False):
                 if step.party in last_starts:
                     raise Exception("Started party that was already started: " + repr(step.party))
                 last_starts[step.party] = step
