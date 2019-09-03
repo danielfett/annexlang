@@ -29,7 +29,7 @@ if os.path.exists(custom_objects_filename):
 with open(args.infile, 'r') as inf:
     src = inf.read()
 
-parsed = yaml.load(src)
+parsed = yaml.load(src, Loader=yaml.Loader)
 
 with open(args.outfile, 'w') as outf:
     t = TikzPicture(parsed)
