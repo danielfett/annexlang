@@ -170,6 +170,17 @@ class ProtocolStep(ProtocolObject):
     @property
     def lines_below(self):
         return self.text_below.strip().split("\n")
+
+    def svg_get_x_from_column(self, column):
+        return (0.5 + column) * self.protocol.options['aspectratio']
+    
+        #return int((100.0 / len(self.protocol.columns)) * column)
+
+    def svg_get_y(self, line=None):
+        if line is None:
+            line = self.line
+        return sum(self.protocol.svg_line_maxheights.get(x, 0) for x in range(line))
+
         
     
 class MultiStep(ProtocolStep):
@@ -330,7 +341,15 @@ class Protocol(Serial):
     @property
     def has_groups(self):
         return hasattr(self, 'groups') and self.groups is not None
-        
+
+    @cached_property
+    def svg_line_maxheights(self):
+        line_maxheights = {}
+        for step in self.protocol.walk():
+            if hasattr(step, 'svg_height'):
+                line = step.line
+                line_maxheights[line] = max(line_maxheights.get(line, 0), step.svg_height)
+        return line_maxheights        
 
 class Party(ProtocolObject):
     yaml_tag = '!Party'

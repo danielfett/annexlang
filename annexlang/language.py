@@ -43,6 +43,55 @@ class HTTPRequest(ProtocolStep):
         else:
             return "1ex", "center"
 
+    @property
+    def svg_height(self):
+        lh = self.protocol.options['line_height']
+        if self.tikz_above and self.tikz_below:
+            return 1 + lh + (lh * len(self.lines_below))
+        elif self.tikz_above:
+            return 1 + lh
+        elif self.tikz_below:
+            return 1 + (lh * len(self.lines_below))
+        else:
+            return 1
+
+    def svg_draw(self, d):
+        id = self.annexid
+        print (f"In element {id}")
+        group = d.add(d.g(id=id))
+        
+        lh = self.protocol.options['line_height']
+        fs = self.protocol.options['font_size']
+        
+        center = int((self.svg_get_x_from_column(self.src.column) + self.svg_get_x_from_column(self.dest.column))/2)
+        top = self.svg_get_y()
+
+        # draw text above, if needed
+        if self.tikz_above:
+            paragraph = group.add(d.g(font_size=self.protocol.options['font_size']))
+            x = center
+            y = top + fs
+            print ("above:", self.text_above)
+            paragraph.add(d.text(self.text_above, ([x], [y]), text_anchor="middle"))
+            
+            top += lh
+
+        # draw arrow, takes up half a unit
+        start = (self.svg_get_x_from_column(self.src.column), top + 0.5)
+        end = (self.svg_get_x_from_column(self.dest.column), top + 0.5)
+        group.add(d.line(start=start, end=end, class_="annex_" + self.type, marker_end="url(#arrow)"))
+        top += 1
+
+        # draw text below, if needed
+        if self.tikz_below:
+            paragraph = group.add(d.g(font_size=self.protocol.options['font_size']))
+            for line in self.lines_below:
+                print ('below: ' + line, top)
+                x = center
+                y = top + fs
+                paragraph.add(d.text(line, ([x], [y]), text_anchor="middle"))
+                top += lh
+
 
 class XHRRequest(HTTPRequest):
     yaml_tag = '!xhr-request'
@@ -162,7 +211,55 @@ class PostMessage(ProtocolStep):
             return "2ex" + ("+2ex" * len(self.lines_below)), "north,yshift=1ex"
         else:
             return "1ex", "center"
+        
+    @property
+    def svg_height(self):
+        lh = self.protocol.options['line_height']
+        if self.tikz_above and self.tikz_below:
+            return 1 + lh + (lh * len(self.lines_below))
+        elif self.tikz_above:
+            return 1 + lh
+        elif self.tikz_below:
+            return 1 + (lh * len(self.lines_below))
+        else:
+            return 1
 
+    def svg_draw(self, d):
+        id = self.annexid
+        print (f"In element {id}")
+        group = d.add(d.g(id=id))
+        
+        lh = self.protocol.options['line_height']
+        fs = self.protocol.options['font_size']
+        
+        center = int((self.svg_get_x_from_column(self.src.column) + self.svg_get_x_from_column(self.dest.column))/2)
+        top = self.svg_get_y()
+
+        # draw text above, if needed
+        if self.tikz_above:
+            paragraph = group.add(d.g(font_size=self.protocol.options['font_size']))
+            x = center
+            y = top + fs
+            print ("above:", self.text_above)
+            paragraph.add(d.text(self.text_above, ([x], [y]), text_anchor="middle"))
+            
+            top += lh
+
+        # draw arrow, takes up half a unit
+        start = (self.svg_get_x_from_column(self.src.column), top + 0.5)
+        end = (self.svg_get_x_from_column(self.dest.column), top + 0.5)
+        group.add(d.line(start=start, end=end, class_="annex_postmessage"))#, marker_end=marker.get_funciri()))
+        top += 1
+
+        # draw text below, if needed
+        if self.tikz_below:
+            paragraph = group.add(d.g(font_size=self.protocol.options['font_size']))
+            for line in self.lines_below:
+                print ('below: ' + line, top)
+                x = center
+                y = top + fs
+                paragraph.add(d.text(line, ([x], [y]), text_anchor="middle"))
+                top += lh
 
 class Action(ProtocolStep):
     yaml_tag = '!action'
@@ -181,6 +278,10 @@ class Action(ProtocolStep):
     def height(self):
         h = 1 + 2 * len(self.label.split("\\\\"))
         return f"{h}ex", "center"
+
+    @property
+    def svg_height(self):
+        return 1
 
     
 class ScriptAction(Action):
@@ -211,6 +312,10 @@ class ScriptAction(Action):
         yield self.party
         yield self.src
         yield self.dest
+
+    @property
+    def svg_height(self):
+        return 4
         
 
 class EndParty(ProtocolStep):
@@ -232,6 +337,16 @@ class EndParty(ProtocolStep):
     @property
     def height(self):
         return "5ex", "center"
+
+    def svg_draw(self, d):
+        fs = self.protocol.options['font_size']
+        col = self.svg_get_x_from_column(self.party.column)
+        y = self.svg_get_y() + fs
+        d.add(d.text(self.party.name, ([col], [y]), text_anchor="middle", font_size=self.protocol.options['font_size'], class_="annex_" + self.type))
+
+    @property
+    def svg_height(self):
+        return 1
 
 
 class StartParty(EndParty):
@@ -261,6 +376,26 @@ class StartParty(EndParty):
                 dest = self.get_pos(self.party.column, segment[1] // 2)
             out += fr"""\draw[{segment[2]}] ({src}) -- ({dest});"""
         return out
+
+    def svg_draw(self, d):
+        super().svg_draw(d)
+        col = self.svg_get_x_from_column(self.party.column)
+        
+        # draw the lifeline(s)
+        out = ""
+        for segment in self.lifeline_segments:
+            
+            starty = self.svg_get_y(1+segment[0] // 2)
+            if segment[0] % 2 == 1:
+                starty += self.protocol.svg_line_maxheights.get(1+segment[0] // 2, 0) // 2
+            start=(col, starty)
+
+            endy = self.svg_get_y(segment[1] // 2)
+            if segment[0] % 2 == 1:
+                endy += self.protocol.svg_line_maxheights.get(segment[1] // 2, 0) // 2
+            end=(col, endy)
+                        
+            d.add(d.line(start=start, end=end, class_=segment[2]))#, marker_end=marker.get_funciri()))
 
 
 class DummyParty(ProtocolStep):
