@@ -1,0 +1,116 @@
+$halfgapwidth: 5px;
+$halfarrowheight: 10px;
+$arrowwidth: 10px;
+$arrowgap: 2px;
+
+
+.annex#UNIQUE_ID {
+
+
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .protocol {
+        display: grid;
+        grid-template-rows: auto;
+        grid-auto-rows: auto;
+        row-gap: calc(2 * $halfgapwidth);
+        padding: calc(2 * $halfgapwidth);
+    }
+
+    .partygroup {
+        background-color: #ddd;
+        border-radius: calc(2 * $halfgapwidth);
+        margin: calc(-1 * $halfgapwidth) calc(-1 * $halfgapwidth - 50%);
+
+        
+    }
+
+    .request {
+        position: relative;
+        margin-right: calc($arrowwidth + $arrowgap);
+        margin-left: $arrowgap;
+        padding: 2px;
+        margin-bottom: 10px;
+        border-bottom: 2px solid black;
+        grid-row-end: span 1;
+    }
+
+    .request::after {
+        content:  url(rightarrow.svg);
+        position: absolute;
+        bottom: calc(-1 * $halfarrowheight - 1px);
+        right: calc(-1 * $arrowwidth);
+    }
+
+    .request.rtl {
+        margin-left: calc($arrowwidth + $arrowgap);
+        margin-right: $arrowgap;
+    }
+
+    .request.rtl::after {
+        left: calc(-1 * $arrowwidth);
+        right: auto;
+        transform: rotate(180deg);
+    }
+
+    .response {
+        @extend .request;
+    }
+
+    .lifeline {
+        border-left: 1px solid #999;
+        grid-column-end: span 1;
+        grid-row-start: 2;
+        margin: calc(-1 * $halfgapwidth) 0;
+        
+    }
+    .start_party {
+        border: 1px solid #999;
+        border-radius: $halfgapwidth;
+        position: relative;
+        left: -25%;
+        text-align: center;
+        align-self: end;
+        height: auto;
+        width: 50%;
+    }
+
+    .end_party {
+        @extend .start_party;
+        font-size: 90%;
+    }
+
+    .http_request {
+        @extend .request;
+    }
+
+    .http_response {
+        @extend .response;
+    }
+
+    .group {
+        border: 1px solid blue;
+        border-radius: calc(2 * $halfgapwidth);
+        margin: calc(-1 * $halfgapwidth);
+    }
+
+    .action {
+        border: 1px dashed #999;
+        border-radius: $halfgapwidth;
+        position: relative;
+        left: -50%;
+        text-align: center;
+        grid-column-end: span 1;
+        grid-row-end: span 1;
+        text-shadow:
+            1px  1px 1px white,
+            1px -1px 1px white,
+            -1px  1px 1px white,
+            -1px -1px 1px white;
+
+    }
+
+}

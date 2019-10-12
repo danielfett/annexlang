@@ -1,0 +1,72 @@
+<html>
+    <style>
+     {{ style }}
+    </style>
+
+    <body>
+        <div class="annex" id="{{ unique_id }}">
+        <div class="protocol" style="grid-template-columns: [start] 1fr 
+{%- for col in protocol.columns %} [{% for party in col.parties %}{{party.annexid}} {% endfor %}]
+{%- if not loop.last %} 2fr{% endif %} {% endfor-%}
+ 1fr [end];">
+
+            {% for group in protocol.groups %}
+            {{ group.html_j2() }}
+            {% endfor %}
+            
+
+            
+            <div class="party start" style="grid-column-start: 4; grid-row-start: 1;">
+                Party starts<br>Party starts<br>Party starts
+            </div>
+            
+            <div class="lifeline" style="grid-column-start: 2; grid-row-end: span 7;">
+            </div>
+            
+            <div class="lifeline" style="grid-column-start: 3; grid-row-end: span 7;">
+            </div>
+            
+            <div class="lifeline" style="grid-column-start: 4; grid-row-end: span 7;">
+            </div>
+
+            <div class="lifeline" style="grid-column-start: 5; grid-row-end: span 7;">
+            </div>
+            
+
+            {% for step in protocol.walk() %}
+            <!-- {{step.annexid}} -->
+            {{step.html_j2() }}
+            {% endfor %}
+            
+            <div class="step" style="grid-column: client / idp; grid-row: 3 / span 1">
+                something else<br>multiline<br>nochwas
+            </div>
+
+            
+            <div class="step" style="grid-column: user / idp; grid-row: 4 / span 1">
+                something else
+            </div>
+
+            <div class="action" style="grid-column-start: idp; grid-row-start: 5">
+                do something
+            </div>
+            
+            <div class="step rtl" style="grid-column: client / attacker; grid-row: 6 / span 1">
+                start flow
+            </div>
+            
+            <div class="step" style="grid-column: client / idp; grid-row: 7 / span 1">
+                something else
+            </div>
+
+            
+            <div class="step rtl" style="grid-column: idp / user; grid-row: 8 / span 1">
+                something else
+            </div>
+
+            <div class="group" style="grid-area: 6 / user / 9 / idp">
+                
+            </div>
+        </div></div>
+    </body>
+</html>

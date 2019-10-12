@@ -56,6 +56,14 @@ class ProtocolObject(yaml.YAMLObject):
     def __repr__(self):
         return f"""<{self.annexid}>"""
 
+    def html_j2(self):
+        if not hasattr(self, 'html_template'):
+            return ''
+        from jinja2 import Environment, BaseLoader  # only loading this if html output is desired
+        template = Environment(loader=BaseLoader).from_string(self.html_template)
+        return template.render({'this': self})
+
+
     
 class ProtocolStep(ProtocolObject):
     node_name_counter = 0
@@ -150,7 +158,11 @@ class ProtocolStep(ProtocolObject):
             t = self.id
         else:
             t = self.annexid
-        return self.protocol.options['enumerate'] % (self._counter - 1, t)
+        return self.protocol.options['enumerate'].format(identifier=t, number=(self._counter - 1))
+
+    @cached_property
+    def html_id(self):
+        return self.tex_id
 
     def set_line(self, line):
         self.line = line
@@ -292,8 +304,9 @@ class Protocol(Serial):
     counter = 0
     columns = []
 
-    def init(self, options):
+    def init(self, options, unique_id):
         self.options = options
+        self.unique_id = unique_id
         # Set line numbers for each step
         self.set_line(1 if self.has_groups else 0)
 
@@ -303,12 +316,13 @@ class Protocol(Serial):
             if p.column == None:
                 p.column = len(self.columns)
                 if hasattr(p, 'extrawidth'):
-                    self.columns.append({'num': len(self.columns), 'extrawidth': p.extrawidth})
+                    self.columns.append({'num': len(self.columns), 'extrawidth': p.extrawidth, 'party': p, 'parties': []})
                 else:
-                    self.columns.append({'num': len(self.columns)})
+                    self.columns.append({'num': len(self.columns), 'parties': []})
         for p in self.parties:
             if isinstance(p.column, Party):
                 p.column = p.column.column
+            self.columns[p.column]['parties'].append(p)
         
 
         step_counter = count(start=0, step=1)
@@ -372,20 +386,30 @@ class Party(ProtocolObject):
 
 class Group(ProtocolObject):
     yaml_tag = '!Group'
+    html_template = """
+    <div class="partygroup" style="grid-area: 1 / {{ this.first_party.annexid}} / 9 / {{ this.last_party.annexid }}">{{ this.name }}</div>
+    """
 
     def tikz_desc(self):
         return f"""% drawing group {self.name}"""
 
-    def tikz_groups(self, num_lines):
+    @cached_property
+    def first_party(self):
         columns_of_parties = {p.column:p for p in self.parties}
         first_column = min(columns_of_parties)
-        first_party = columns_of_parties[first_column]
+        return columns_of_parties[first_column]
+
+    @cached_property
+    def last_party(self):
+        columns_of_parties = {p.column:p for p in self.parties}
         last_column = max(columns_of_parties)
-        last_party = columns_of_parties[last_column]
+        return columns_of_parties[last_column]        
+
+    def tikz_groups(self, num_lines):
         fit_string = "fit=" + ''.join(f'({x})' for x in chain(
-            [self.get_pos(first_column, 0)],
-            first_party.fit_string,
-            last_party.fit_string,
+            [self.get_pos(self.first_party.column, 0)],
+            self.first_party.fit_string,
+            self.last_party.fit_string,
         ))
         gid = self.annexid
         return fr"""\node[annex_group_box,{fit_string}]({gid}) {{}}; \node[anchor=base,above=of {gid}.north,above=-2.5ex,anchor=base] {{{self.name}}};"""

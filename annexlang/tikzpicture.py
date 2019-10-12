@@ -7,10 +7,10 @@ class TikzPicture:
         'styles': [],
     }
     
-    def __init__(self, annexfile):
+    def __init__(self, annexfile, unique_id):
         self.options.update(annexfile['options'])
         self.protocol = annexfile['protocol']
-        self.protocol.init(self.options)
+        self.protocol.init(self.options, unique_id)
 
     def dump(self, f):
         self.dump_header(f)
