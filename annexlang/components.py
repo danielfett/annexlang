@@ -58,8 +58,10 @@ class ProtocolObject(yaml.YAMLObject):
 
     def html_j2(self, protocol):
         if not hasattr(self, 'html_template'):
-            print ("Step not represented in html: " + self.annexid)
+            print ("Step type not yet supported in HTML, will be ignored: " + self.annexid)
             return ''
+        if hasattr(self, 'html_warning'):
+            print ("Step type not yet supported in HTML, will not be shown correctly: " + self.annexid)
         from jinja2 import Environment, BaseLoader  # only loading this if html output is desired
         template = Environment(loader=BaseLoader).from_string(self.html_template)
         return template.render({'this': self, 'protocol': protocol})
@@ -245,6 +247,7 @@ class MultiStep(ProtocolStep):
 class Parallel(MultiStep):
     yaml_tag = '!Parallel'
     length_fun = max
+    html_template = ''
     
     def set_line(self, line):
         length = 0
@@ -259,6 +262,7 @@ class Serial(MultiStep):
     yaml_tag = '!Serial'
     length_fun = sum
     lifeline_style = "annex_lifeline"
+    html_template = ''
     
     def set_line(self, line):
         length = 0
@@ -304,6 +308,7 @@ class Protocol(Serial):
     extra_steps = []
     counter = 0
     columns = []
+    html_template = ''
 
     def init(self, options, unique_id):
         self.options = options
@@ -409,6 +414,7 @@ class Group(ProtocolObject):
 
 class Separator(ProtocolStep):
     skip_number = True
+    html_template = """<div class="separator" style="grid-column-start: start; grid-column-end: end; grid-row-start: {{ this.line + 1}}"></div>"""
 
     def tikz_arrows(self):
         src = self.get_pos(self.protocol.parties[0].column, self.line)
@@ -432,6 +438,7 @@ class Comment(ProtocolStep):
     id_above = False
     skip_number = True
     text_style = 'annex_comment_text'
+    html_template = """<div class="comment" style="grid-column-start: start; grid-column-end: end; grid-row-start: {{ this.line + 1}}"><span>{{ this.label }}</span></div>"""
 
     def tikz_arrows(self):
         src = self.get_pos(self.protocol.parties[0].column, self.line)

@@ -45,17 +45,18 @@ $arrowrightblue: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-
         margin-left: $arrowgap;
         padding: 2px;
         margin-bottom: 10px;
-        border-bottom: 2px solid black;
+        border-bottom: 1px solid black;
         grid-row-end: span 1;
     }
 
     .request::after {
-        content:  $arrowright;
+        /* content:  $arrowright; */
+        content: "▶";
         position: absolute;
-        bottom: calc(-1 * #{$halfarrowheight} - 1px);
+        bottom: -1ex;
         right: calc(-1 * #{$arrowwidth});
-        height: calc(2 * #{$halfarrowheight});
-        width: $arrowwidth;
+        /*height: calc(2 * #{$halfarrowheight});
+        width: $arrowwidth;*/
     }
 
     .request.rtl {
@@ -66,22 +67,31 @@ $arrowrightblue: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-
     .request.rtl::after {
         left: calc(-1 * #{$arrowwidth});
         right: auto;
-        transform: rotate(180deg);
+        content: "◀";/*
+        transform: rotate(180deg);*/
     }
 
     .response {
         @extend .request;
+        border-bottom-style: dashed;
+    }
+
+    .request_response {
+        @extend .request;
+        margin-bottom: 1ex;
+    }
+
+    .request_response.is_response {
+        @extend .request;
+        border-bottom-style: dashed;
+        margin-bottom: 0;
     }
 
     .postmessage {
         @extend .request;
         
-        border-bottom: dashed;
+        border-bottom: double;
         color: #009;
-    }
-
-    .postmessage::after {
-        content:  $arrowrightblue;
     }
 
     .annex_lifeline {
@@ -95,14 +105,16 @@ $arrowrightblue: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-
         border-left-style: dashed;
     }
     .start_party {
-        border: 1px solid #000;
-        border-radius: $halfgapwidth;
         position: relative;
-        left: -25%;
+        left: -50%;
         text-align: center;
         align-self: end;
         height: auto;
-        width: 50%;
+    }
+    .start_party span {
+        border: 1px solid #000;
+        border-radius: $halfgapwidth;
+        padding:  0 5px;
     }
 
     .end_party {
@@ -126,13 +138,15 @@ $arrowrightblue: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-
     }
 
     .action {
-        border: 1px dashed #999;
-        border-radius: $halfgapwidth;
         position: relative;
         left: -50%;
         text-align: center;
         grid-column-end: span 1;
         grid-row-end: span 1;
+    }
+
+    .action span {
+
         text-shadow:
             1px  1px 1px white,
             1px -1px 1px white,
@@ -149,5 +163,22 @@ $arrowrightblue: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-
         border-radius: 3px;
         padding: 0px 3px;
         font-size: 90%;
+    }
+
+    .separator {
+        grid-row-end: span 1;
+        border-bottom: 1px dashed #333;
+        margin-bottom: -5px;
+    }
+
+    .comment {
+        text-align: center;
+        
+        text-shadow:
+            1px  1px 1px white,
+            1px -1px 1px white,
+            -1px  1px 1px white,
+            -1px -1px 1px white;
+
     }
 }

@@ -3,7 +3,7 @@ from .components import ProtocolStep
 class Request(ProtocolStep):
     yaml_tag = "!request"
     type = "request"
-    text = ""
+    text = "Request"
     html_template = """
     {% if not this.html_rtl %}
     <div class="{{ this.type }}" style="grid-column: {{this.src.annexid}} / {{this.dest.annexid}}; grid-row: {{this.line + 1}} / span 1">
@@ -55,6 +55,9 @@ class Request(ProtocolStep):
         return fr"""%% draw {self.type}
         \draw[annex_{self.type}{self.tikz_extra_style}] ({src}) to {self.tikz_above} {self.tikz_below} ({dest});"""
 
+class Response(Request):
+    text = "Response"
+    
 class HTTPRequest(Request):
     yaml_tag = '!http-request'
     method = ""
@@ -79,7 +82,7 @@ class XHRRequest(HTTPRequest):
     type = "xhr_request"
 
 
-class HTTPResponse(HTTPRequest):
+class HTTPResponse(Response, HTTPRequest):
     yaml_tag = '!http-response'
     code = ""
     headers = ""
@@ -94,7 +97,10 @@ class HTTPResponse(HTTPRequest):
 
     @property
     def html_text(self):
-        return f'<span class="http_code">{self.code}</span> <span class="http_headers">{self.headers}</span> '
+        if self.code or self.headers:
+            return f'<span class="http_code">{self.code}</span> <span class="http_headers">{self.headers}</span> '
+        else:
+            return "Response"
 
 
 class XHRResponse(HTTPResponse):
@@ -116,7 +122,21 @@ class Websocket(Request):
         return f'<span class="websocket_parameters">{self.parameters}</span> '
     
 
-class HTTPRequestResponse(HTTPRequest):
+class RequestResponse(Request):
+    yaml_tag = "!request-response"
+    type = "request_response"
+    
+    html_template = Request.html_template + """
+    {% if not this.html_rtl %}
+    <div class="{{ this.type }} is_response rtl" style="grid-column: {{this.src.annexid}} / {{this.dest.annexid}}; grid-row: {{this.line + 1}} / span 1">
+    {% else %}
+    <div class="{{ this.type }} is_response" style="grid-column: {{this.dest.annexid}} / {{this.src.annexid}}; grid-row: {{this.line + 1}} / span 1">
+    {% endif %}
+    </div>
+    """
+
+    
+class HTTPRequestResponse(RequestResponse, HTTPRequest):
     yaml_tag = '!http-request-response'
     type = "request_response"
     type_above = 'http_request'
@@ -181,7 +201,7 @@ class Action(ProtocolStep):
     yaml_tag = '!action'
     type = "action"
     html_template = """<div class="{{ this.type }}" style="grid-column-start: {{ this.party.annexid }}; grid-row-start: {{ this.line + 1}};">
-    {{ this.label }}
+    {{ this.html_id }} <span>{{ this.label }}</span>
     </div>"""
 
     def _init(self, *args, **kwargs):
@@ -205,6 +225,7 @@ class ScriptAction(Action):
     data = ""
     label = ""
     id_above = False
+    html_warning = True
 
     def _init(self, *args, **kwargs):
         self.party = self.src
@@ -237,7 +258,7 @@ class EndParty(ProtocolStep):
     endsparty = True
     html_template = """
     <div class="{{ this.type }}" style="grid-column-start: {{ this.party.annexid }}; grid-row-start: {{ this.line + 1}};">
-    {{ this.party.name }}
+    <span>{{ this.party.name }}</span>
     </div>
     """
 
@@ -314,6 +335,7 @@ class OpenWindowStartParty(StartParty):
     yaml_tag = '!open-window-start-party'
     id_above = True
     skip_number = False
+    html_warning = True
 
     def _init(self, *args, **kwargs):
         super()._init(*args, **kwargs)
@@ -342,6 +364,7 @@ class CloseWindowEndParty(EndParty):
     yaml_tag = '!close-window-end-party'
     id_above = True
     skip_number = False
+    html_warning = True
 
     def _init(self, *args, **kwargs):
         super()._init(*args, **kwargs)
