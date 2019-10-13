@@ -1,27 +1,21 @@
 from .components import ProtocolStep
 
-
-class HTTPRequest(ProtocolStep):
-    yaml_tag = '!http-request'
-    method = ""
-    url = ""
-    parameters = ""
-    type = "http_request"
-    id_above = True
+class Request(ProtocolStep):
+    yaml_tag = "!request"
+    type = "request"
+    text = ""
     html_template = """
     {% if not this.html_rtl %}
-    <div class="{{ this.type }}" style="grid-column: {{this.src.annexid}} / {{this.dest.annexid}}; grid-row: {{this.line}} / span 1">
+    <div class="{{ this.type }}" style="grid-column: {{this.src.annexid}} / {{this.dest.annexid}}; grid-row: {{this.line + 1}} / span 1">
     {% else %}
-    <div class="{{ this.type }} rtl" style="grid-column: {{this.dest.annexid}} / {{this.src.annexid}}; grid-row: {{this.line}} / span 1">
+    <div class="{{ this.type }} rtl" style="grid-column: {{this.dest.annexid}} / {{this.src.annexid}}; grid-row: {{this.line + 1}} / span 1">
     {% endif %}
-    {{this.html_id }} {{ this.method }} {{ this.url }} {{this.parameters }}
+    {{ this.html_id }} {{ this.html_text }} 
     </div>
     """
 
     def _init(self, *args, **kwargs):
         super()._init(*args, **kwargs)
-        self.text_above = " ".join((self.method, self.url, )).strip()
-        self.text_below = self.parameters
         if hasattr(self, 'reply_to'):
             self.dest = self.reply_to.src
             self.src = self.reply_to.dest
@@ -31,20 +25,19 @@ class HTTPRequest(ProtocolStep):
         ]
 
     @property
-    def html_rtl(self):  # true if this step needs to be drawn from right to left
-        return self.src.column > self.dest.column
-
-    @property
     def affected_parties(self):
         yield self.src
         yield self.dest
-    
-    def tikz_arrows(self):
-        src = self.get_pos(self.src.column, self.line)
-        dest = self.get_pos(self.dest.column, self.line)
-        return fr"""%% draw {self.type}
-        \draw[annex_{self.type}{self.tikz_extra_style}] ({src}) to {self.tikz_above} {self.tikz_below} ({dest});"""
 
+    @property
+    def html_rtl(self):  # true if this step needs to be drawn from right to left
+        return self.src.column > self.dest.column
+    
+    @property
+    def html_text(self):
+        return self.text
+        #{{ this.method }} {{ this.url }} {{this.parameters }}
+    
     @property
     def height(self):
         if self.tikz_above and self.tikz_below:
@@ -55,6 +48,30 @@ class HTTPRequest(ProtocolStep):
             return "2ex" + ("+2ex" * len(self.lines_below)), "north,yshift=1ex"
         else:
             return "1ex", "center"
+    
+    def tikz_arrows(self):
+        src = self.get_pos(self.src.column, self.line)
+        dest = self.get_pos(self.dest.column, self.line)
+        return fr"""%% draw {self.type}
+        \draw[annex_{self.type}{self.tikz_extra_style}] ({src}) to {self.tikz_above} {self.tikz_below} ({dest});"""
+
+class HTTPRequest(Request):
+    yaml_tag = '!http-request'
+    method = ""
+    url = ""
+    parameters = ""
+    type = "http_request"
+    id_above = True
+
+    def _init(self, *args, **kwargs):
+        super()._init(*args, **kwargs)
+        self.text_above = " ".join((self.method, self.url, )).strip()
+        self.text_below = self.parameters
+
+    @property
+    def html_text(self):
+        return f'<span class="http_method">{self.method}</span> <span class="http_url">{self.url}</span> <span class="http_parameters">{self.parameters}</span> '
+
 
 
 class XHRRequest(HTTPRequest):
@@ -75,13 +92,17 @@ class HTTPResponse(HTTPRequest):
             self.text_above = 'Response'
         self.text_below = self.parameters
 
+    @property
+    def html_text(self):
+        return f'<span class="http_code">{self.code}</span> <span class="http_headers">{self.headers}</span> '
+
 
 class XHRResponse(HTTPResponse):
     yaml_tag = '!xhr-response'
     type = "xhr_response"
 
 
-class Websocket(HTTPRequest):
+class Websocket(Request):
     yaml_tag = '!websocket'
     type = "websocket"
 
@@ -89,6 +110,10 @@ class Websocket(HTTPRequest):
         super()._init(*args, **kwargs)
         self.text_above = "WebSocket"
         self.text_below = self.parameters
+    
+    @property
+    def html_text(self):
+        return f'<span class="websocket_parameters">{self.parameters}</span> '
     
 
 class HTTPRequestResponse(HTTPRequest):
@@ -133,52 +158,31 @@ class XHRResponseRequest(HTTPResponseRequest):
     type_below = 'xhr_response'
 
 
-class PostMessage(ProtocolStep):
+class PostMessage(Request):
     yaml_tag = '!postmessage'
     body = ""
     comment = ""
     id_above = True
     text_style = "annex_postmessage_text"
+    type = "postmessage"
 
     def _init(self, *args, **kwargs):
         super()._init(*args, **kwargs)
         self.text_above = self.body
         self.text_below = self.comment
-        self._affecting_nodes = [
-            self.get_pos(self.src.column, self.line),
-            self.get_pos(self.dest.column, self.line)
-        ]
+
 
     @property
-    def affected_parties(self):
-        yield self.src
-        yield self.dest
-    
-    def tikz_arrows(self):
-        src = self.get_pos(self.src.column, self.line)
-        dest = self.get_pos(self.dest.column, self.line)
-        return fr"""%% draw postmessage
-        \draw[annex_postmessage{self.tikz_extra_style}] ({src}) to {self.tikz_above} {self.tikz_below} ({dest});"""
-
-#    def height(self):
-#        if self.tikz_above:
-#            return "4ex", "south,yshift=-1ex"
-#        else:
-#            return "1ex", "center"
-    @property
-    def height(self):
-        if self.tikz_above and self.tikz_below:
-            return "4ex" + ("+2ex" * len(self.lines_below)), "north,yshift=3ex"
-        elif self.tikz_above:
-            return "4ex", "south,yshift=-1ex"
-        elif self.tikz_below:
-            return "2ex" + ("+2ex" * len(self.lines_below)), "north,yshift=1ex"
-        else:
-            return "1ex", "center"
+    def html_text(self):
+        return f'<span class="postmessage_body">{self.body}</span> <span class="postmessage_comment">{self.comment}</span>'
         
 
 class Action(ProtocolStep):
     yaml_tag = '!action'
+    type = "action"
+    html_template = """<div class="{{ this.type }}" style="grid-column-start: {{ this.party.annexid }}; grid-row-start: {{ this.line + 1}};">
+    {{ this.label }}
+    </div>"""
 
     def _init(self, *args, **kwargs):
         super()._init(*args, **kwargs)
@@ -232,7 +236,7 @@ class EndParty(ProtocolStep):
     type = 'end_party'
     endsparty = True
     html_template = """
-    <div class="{{ this.type }}" style="grid-column-start: {{ this.party.annexid }}; grid-row-start: {{ this.line }};">
+    <div class="{{ this.type }}" style="grid-column-start: {{ this.party.annexid }}; grid-row-start: {{ this.line + 1}};">
     {{ this.party.name }}
     </div>
     """
@@ -259,8 +263,12 @@ class StartParty(EndParty):
     endsparty = False
     startsparty = True
     lifeline_segments = []
+    html_template = EndParty.html_template + """{% for start, end, style in this.lifeline_segments %}
+    <div class="{{ style }}" style="grid-column-start: {{ this.party.column + 2 }}; grid-row-start: {{ (start // 2) + 2 }}; grid-row-end: {{ (end // 2) + 1 }};"></div>
+    {% endfor %}"""
 
     def tikz_arrows(self):
+        # lifeline_segments contains tuples (doublelinestart, doublelineend, style)
         out = ""
         for segment in self.lifeline_segments:
             if segment[0] % 2 == 1:

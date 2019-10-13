@@ -56,12 +56,13 @@ class ProtocolObject(yaml.YAMLObject):
     def __repr__(self):
         return f"""<{self.annexid}>"""
 
-    def html_j2(self):
+    def html_j2(self, protocol):
         if not hasattr(self, 'html_template'):
+            print ("Step not represented in html: " + self.annexid)
             return ''
         from jinja2 import Environment, BaseLoader  # only loading this if html output is desired
         template = Environment(loader=BaseLoader).from_string(self.html_template)
-        return template.render({'this': self})
+        return template.render({'this': self, 'protocol': protocol})
 
 
     
@@ -356,14 +357,6 @@ class Protocol(Serial):
     def has_groups(self):
         return hasattr(self, 'groups') and self.groups is not None
 
-    @cached_property
-    def svg_line_maxheights(self):
-        line_maxheights = {}
-        for step in self.protocol.walk():
-            if hasattr(step, 'svg_height'):
-                line = step.line
-                line_maxheights[line] = max(line_maxheights.get(line, 0), step.svg_height)
-        return line_maxheights        
 
 class Party(ProtocolObject):
     yaml_tag = '!Party'
@@ -387,7 +380,7 @@ class Party(ProtocolObject):
 class Group(ProtocolObject):
     yaml_tag = '!Group'
     html_template = """
-    <div class="partygroup" style="grid-area: 1 / {{ this.first_party.annexid}} / 9 / {{ this.last_party.annexid }}">{{ this.name }}</div>
+    <div class="partygroup" style="grid-area: 1 / {{ this.first_party.annexid}} / span {{ protocol.length }} / {{ this.last_party.annexid }}"></div><div class="partygroup_text" style="grid-area: 1 / {{ this.first_party.annexid}} / 1 / {{ this.last_party.annexid }}">{{ this.name }}</div>
     """
 
     def tikz_desc(self):
@@ -413,7 +406,6 @@ class Group(ProtocolObject):
         ))
         gid = self.annexid
         return fr"""\node[annex_group_box,{fit_string}]({gid}) {{}}; \node[anchor=base,above=of {gid}.north,above=-2.5ex,anchor=base] {{{self.name}}};"""
-
 
 class Separator(ProtocolStep):
     skip_number = True

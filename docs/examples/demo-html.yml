@@ -67,7 +67,7 @@ protocol:
            reply_to: *get_doc_1
            id: some-response
          - !action
-           label: <code>CREATE\_PEER\_CONNECTION</code>
+           label: <code>CREATE_PEER_CONNECTION</code>
            party: *b1d
          - !open-window-start-party
            src: *b1d
@@ -80,18 +80,18 @@ protocol:
          - !script-action
            dest: *b1d
            src: *b1i
-           label: <code>GET\_IA\_INFO</code>
+           label: <code>GET_IA_INFO</code>
            reversed: yes
            data: stuff
          - !script-action
-           label: <code>SET\_IA</code>
+           label: <code>SET_IA</code>
            dest: *b1d
            src: *b1i
            data: results
          - !end-party
            party: *b1i             
          - !action
-           label: <code>GET\_OFFERdd</code>
+           label: <code>GET_OFFERdd</code>
            party: *b1d
            
       - !Serial # in browser 2
@@ -105,7 +105,7 @@ protocol:
         - !http-response
           reply_to: *get_doc_3
         - !action
-          label: <code>CREATE\_PEER\_CONNECTION</code>
+          label: <code>CREATE_PEER_CONNECTION</code>
           party: *b2d
         - !open-window-start-party
           src: *b2d
@@ -131,7 +131,7 @@ protocol:
           src: *b2d
           dest: *b2i                         
         - !action
-          label: <code>GET\_OFFERxx</code>
+          label: <code>GET_OFFERxx</code>
           party: *b2d
 # EXCHANGING OFFERS/ANSWERS
   - !http-request
@@ -146,7 +146,7 @@ protocol:
         dest: *b2d
         parameters: offer
       - !action
-        label: <code>GET\_OFFER\_SET\_ANSWER</code>
+        label: <code>GET_OFFER_SET_ANSWER</code>
         party: *b2d
       - !http-request
         src: *b2d
@@ -174,18 +174,18 @@ protocol:
          - !script-action
            dest: *b1d
            src: *b1i
-           label: <code>GET\_IA\_INFO</code>
+           label: <code>GET_IA_INFO</code>
            reversed: yes
            data: stuff
          - !script-action
-           label: <code>SET\_IA</code>
+           label: <code>SET_IA</code>
            dest: *b1d
            src: *b1i
            data: results
          - !end-party
            party: *b1i             
          - !action
-           label: <code>GET\_OFFER</code>
+           label: <code>GET_OFFER</code>
            party: *b1d
           
       - !Serial # in browser 2
@@ -203,18 +203,18 @@ protocol:
          - !script-action
            dest: *b2d
            src: *b2i
-           label: <code>GET\_IA\_INFO</code>
+           label: <code>GET_IA_INFO</code>
            reversed: yes
            data: stuff
          - !script-action
-           label: <code>SET\_IA</code>
+           label: <code>SET_IA</code>
            dest: *b2d
            src: *b2i
            data: results
          - !end-party
            party: *b2i             
          - !action
-           label: <code>GET\_OFFER</code>
+           label: <code>GET_OFFER</code>
            party: *b2d
 # ESTABLISH DIRECT CONNECTION
   - --------------------------------

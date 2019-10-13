@@ -36,7 +36,7 @@ if os.path.exists(custom_objects_filename):
 with open(args.infile, 'r') as inf:
     src = inf.read()
 
-unique_id = hashlib.md5(src.encode('utf-8')).hexdigest()[:10]  # yes, md5 is fine here. really.
+unique_id = "annex_" + hashlib.md5(src.encode('utf-8')).hexdigest()[:10]  # yes, md5 is fine here. really.
 
 parsed = yaml.load(src, Loader=yaml.Loader)
 

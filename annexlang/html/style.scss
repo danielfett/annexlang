@@ -3,6 +3,8 @@ $halfarrowheight: 10px;
 $arrowwidth: 10px;
 $arrowgap: 2px;
 
+$arrowright: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg version="1.1" viewBox="0 0 10 20" xmlns="http://www.w3.org/2000/svg"><path d="m0 0 10 10-10 10z" stroke-width="2"/></svg>');
+$arrowrightblue: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg version="1.1" viewBox="0 0 10 20" xmlns="http://www.w3.org/2000/svg"><path d="m0 0 10 10-10 10z" stroke-width="2" fill="%23000099" /></svg>');
 
 .annex#UNIQUE_ID {
 
@@ -16,21 +18,30 @@ $arrowgap: 2px;
         display: grid;
         grid-template-rows: auto;
         grid-auto-rows: auto;
-        row-gap: calc(2 * $halfgapwidth);
-        padding: calc(2 * $halfgapwidth);
+        row-gap: calc(2 * #{$halfgapwidth});
+        padding: calc(2 * #{$halfgapwidth});
     }
 
     .partygroup {
         background-color: #ddd;
-        border-radius: calc(2 * $halfgapwidth);
-        margin: calc(-1 * $halfgapwidth) calc(-1 * $halfgapwidth - 50%);
-
-        
+        border-radius: calc(2 * #{$halfgapwidth});
+        margin: calc(-1 * #{$halfgapwidth}) calc(-1 * #{$halfgapwidth} - 50%);
+    }
+    .partygroup_text {
+        text-align: center;
+        display: inline-block;
+        background-color: #999;
+        margin-top: calc(-1 * #{$halfgapwidth});
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        color: white;
+        padding-top: #{$halfgapwidth};
+        padding-bottom: #{$halfgapwidth};
     }
 
     .request {
         position: relative;
-        margin-right: calc($arrowwidth + $arrowgap);
+        margin-right: calc(#{$arrowwidth} + #{$arrowgap});
         margin-left: $arrowgap;
         padding: 2px;
         margin-bottom: 10px;
@@ -39,19 +50,21 @@ $arrowgap: 2px;
     }
 
     .request::after {
-        content:  url(rightarrow.svg);
+        content:  $arrowright;
         position: absolute;
-        bottom: calc(-1 * $halfarrowheight - 1px);
-        right: calc(-1 * $arrowwidth);
+        bottom: calc(-1 * #{$halfarrowheight} - 1px);
+        right: calc(-1 * #{$arrowwidth});
+        height: calc(2 * #{$halfarrowheight});
+        width: $arrowwidth;
     }
 
     .request.rtl {
-        margin-left: calc($arrowwidth + $arrowgap);
+        margin-left: calc(#{$arrowwidth} + #{$arrowgap});
         margin-right: $arrowgap;
     }
 
     .request.rtl::after {
-        left: calc(-1 * $arrowwidth);
+        left: calc(-1 * #{$arrowwidth});
         right: auto;
         transform: rotate(180deg);
     }
@@ -60,15 +73,29 @@ $arrowgap: 2px;
         @extend .request;
     }
 
-    .lifeline {
+    .postmessage {
+        @extend .request;
+        
+        border-bottom: dashed;
+        color: #009;
+    }
+
+    .postmessage::after {
+        content:  $arrowrightblue;
+    }
+
+    .annex_lifeline {
         border-left: 1px solid #999;
         grid-column-end: span 1;
-        grid-row-start: 2;
-        margin: calc(-1 * $halfgapwidth) 0;
+        margin: calc(-2 * #{$halfgapwidth}) 0;
         
     }
+    .annex_lifeline_dashed {
+        @extend .annex_lifeline;
+        border-left-style: dashed;
+    }
     .start_party {
-        border: 1px solid #999;
+        border: 1px solid #000;
         border-radius: $halfgapwidth;
         position: relative;
         left: -25%;
@@ -81,6 +108,7 @@ $arrowgap: 2px;
     .end_party {
         @extend .start_party;
         font-size: 90%;
+        align-self: start;
     }
 
     .http_request {
@@ -93,8 +121,8 @@ $arrowgap: 2px;
 
     .group {
         border: 1px solid blue;
-        border-radius: calc(2 * $halfgapwidth);
-        margin: calc(-1 * $halfgapwidth);
+        border-radius: calc(2 * #{$halfgapwidth});
+        margin: calc(-1 * #{$halfgapwidth});
     }
 
     .action {
@@ -113,4 +141,13 @@ $arrowgap: 2px;
 
     }
 
+    .number {
+        background-color: #00f;
+        color: #fff;
+        text-decoration: none !important;
+        display: inline-block;
+        border-radius: 3px;
+        padding: 0px 3px;
+        font-size: 90%;
+    }
 }
