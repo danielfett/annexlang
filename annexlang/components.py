@@ -151,9 +151,8 @@ class ProtocolStep(ProtocolObject):
         if not self.skip_number and not skip_number:
             self._counter = counter.send(self.counter)
 
-    @cached_property
-    def tex_id(self):
-        if not self.protocol.options['enumerate']:
+    def formatted_id(self, protocol_option):
+        if not self.protocol.options[protocol_option]:
             return ''
         if self.skip_number or not hasattr(self, '_counter'):
             return ''
@@ -161,11 +160,16 @@ class ProtocolStep(ProtocolObject):
             t = self.id
         else:
             t = self.annexid
-        return self.protocol.options['enumerate'].format(identifier=t, number=(self._counter - 1))
+        prefix = self.protocol.options['prefix']
+        return self.protocol.options[protocol_option].format(identifier=t, number=(self._counter - 1), prefix=prefix)
+
+    @cached_property
+    def tex_id(self):
+        return self.formatted_id('enumerate')
 
     @cached_property
     def html_id(self):
-        return self.tex_id
+        return self.formatted_id('html_enumerate')
 
     def set_line(self, line):
         self.line = line

@@ -17,13 +17,13 @@ formats = {
 CUSTOM_OBJECTS_FILE = 'annex_custom.py'
 
 parser = argparse.ArgumentParser(description='Convert an file from the Annex language to a TikZ picture that can be used in TeX documents.')
-parser.add_argument('infile', type=str, help='Input file, YAML format with Annex extensions.')
+parser.add_argument('infile', type=argparse.FileType('r'), help='Input file, YAML format with Annex extensions.')
 parser.add_argument('format', type=str, help=f'Output format', choices=formats.keys())
-parser.add_argument('outfile', type=str, help='Output file, TeX code or HTML.')
+parser.add_argument('outfile', type=argparse.FileType('w'), help='Output file, TeX code or HTML.')
 args = parser.parse_args()
 
 custom_objects_filename = os.path.join(
-    os.path.dirname(args.infile),
+    os.path.dirname(args.infile.name),
     CUSTOM_OBJECTS_FILE
 )
 
@@ -33,8 +33,7 @@ if os.path.exists(custom_objects_filename):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     
-with open(args.infile, 'r') as inf:
-    src = inf.read()
+src = args.infile.read()
 
 unique_id = "annex_" + hashlib.md5(src.encode('utf-8')).hexdigest()[:10]  # yes, md5 is fine here. really.
 
@@ -42,8 +41,8 @@ parsed = yaml.load(src, Loader=yaml.Loader)
 
 output_class = formats[args.format]
 
-with open(args.outfile, 'w') as outf:
-    t = output_class(parsed, unique_id=unique_id)
-    t.dump(outf)
+
+t = output_class(parsed, unique_id=unique_id)
+t.dump(args.outfile)
 
     

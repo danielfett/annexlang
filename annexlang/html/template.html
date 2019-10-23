@@ -10,15 +10,14 @@
 {%- if not loop.last %} 2fr{% endif %} {% endfor-%}
  1fr [end];">
 
-            {% for group in protocol.groups %}
+            {%- for group in protocol.groups -%}
             {{ group.html_j2(protocol) }}
-            {% endfor %}
+            {%- endfor -%}
             
-
-            {% for step in protocol.walk() %}
+            {%- for step in protocol.walk() -%}
             <!-- {{step.annexid}} -->
-            {{step.html_j2(protoco) }}
-            {% endfor %}
+            {{- step.html_j2(protoco) -}}
+            {%- endfor -%}
         </div></div>
     </body>
 </html>

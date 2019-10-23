@@ -7,9 +7,10 @@ SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 class HTMLPicture:
 
     options = {
-        'enumerate': '<a href="#{identifier}" class="number">{number}</a>',
+        'html_enumerate': '<a href="#{prefix}-{identifier}" class="number">{number}</a>',
         'template': os.path.join(SCRIPT_PATH, 'html', 'template.html'),
         'stylesheet': os.path.join(SCRIPT_PATH, 'html', 'style.scss'),
+        'prefix': 'annex',
     }
     
     def __init__(self, annexfile, unique_id):
@@ -21,7 +22,7 @@ class HTMLPicture:
         scssfile = self.protocol.options['stylesheet']
         with open(scssfile, 'r') as f:
             scss = f.read().replace('UNIQUE_ID', self.protocol.unique_id)
-        return Compiler().compile_string(scss)
+        return Compiler(output_style='compressed').compile_string(scss)
 
         
     def dump(self, f):

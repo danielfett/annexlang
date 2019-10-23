@@ -20,6 +20,7 @@ setup(
     scripts=['bin/annex-convert'],
     install_requires=[
         'pyyaml',
+        'pyScss',
     ],
       
     classifiers=[

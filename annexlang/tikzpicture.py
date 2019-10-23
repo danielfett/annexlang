@@ -5,6 +5,7 @@ class TikzPicture:
         'rowsep': '4ex',
         'enumerate': '',
         'styles': [],
+        'prefix': 'annex',
     }
     
     def __init__(self, annexfile, unique_id):
