@@ -1,0 +1,7 @@
+.idea/
+annexlang.egg-info/
+build/
+dist/*.egg
+__pycache__
+docs/examples/*.pdf
+docs/examples/*.yml.tex
