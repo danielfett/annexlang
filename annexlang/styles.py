@@ -8,7 +8,7 @@ class StyleDefault(yaml.YAMLObject):
     yaml_tag = "!style-default"
     style = r"""
     % basics
-    every node/.style={font=\sffamily\tiny},
+    every node/.style={font=\sffamily\tiny, align=center},
     annex_lifeline/.style={draw=black!30},
     annex_matrix_node/.style={},
     annex_matrix_dummy_height/.style={},
