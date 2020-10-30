@@ -86,7 +86,10 @@ class ProtocolStep(ProtocolObject):
             return text
         if not text:
             return ''
-        return r"\contour{white}{%s}" % text
+        contoured = r"\contour{white}{%s}" % text
+        # we can't have line breaks inside \contour, so we need a new contour command for each line
+        contoured = contoured.replace(r"\\", r"}\\\contour{white}{")
+        return contoured
 
     @cached_property
     def tikz_extra_style(self):

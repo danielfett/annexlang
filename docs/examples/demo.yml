@@ -86,7 +86,7 @@ protocol:
          - !http-request-response &get_doc_2
            src: *b1i
            dest: *idp1
-           method: GET
+           method: "GET\\\\Path:"
            url: /.wk/idp-proxy
          - !script-action
            dest: *b1d
@@ -133,7 +133,7 @@ protocol:
         - !postmessage
           dest: *b2i
           src: *b2d
-          body: post message stuff
+          body: post message stuff\\and even more\\post message stuff
         - !postmessage
           body: 42
           dest: *b2d
