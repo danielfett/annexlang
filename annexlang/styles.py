@@ -20,7 +20,7 @@ class StyleDefault(yaml.YAMLObject):
     annex_group_title_placeholder/.style={},
     annex_condensed_box/.style={draw=blue,rounded corners=1ex,inner sep=0},
     % start/end parties
-    annex_start_party_box/.style={fill=white,draw,rounded corners=0.3ex,anchor=center,inner sep=0.5ex,minimum height=1.7em,inner sep=1.5mm},
+    annex_start_party_box/.style={fill=white,draw,rounded corners=0.3ex,anchor=center,minimum height=1.7em,inner sep=1.5mm},
     annex_end_party_box/.style={annex_start_party_box,scale=0.7},
     % individual steps
     annex_http_request/.style={-Latex,line,draw=purple},
