@@ -184,17 +184,15 @@ class MultiStep(ProtocolStep):
             d.draw()
 
     def _init(self, protocol, counter, skip_number):
-        if self.condense or skip_number:
+        if self.condense:
             self.skip_number = False
-            skip_numbers = True
-        else:
-            skip_numbers = False
+        skip_inner_numbers = getattr(self, "skip_inner_numbers", self.condense)
         super()._init(protocol, counter, skip_number)
         for step in self.steps:
-            step._init(protocol, counter, skip_numbers)
+            step._init(protocol, counter, skip_inner_numbers)
 
     def tikz_markers(self):
-        if not self.condense:
+        if not self.condense and not hasattr(self, "label"):
             return ""
 
         if type(self.condense) is not str:
@@ -204,6 +202,9 @@ class MultiStep(ProtocolStep):
         gid = self.annexid
         out = fr"""\node[annex_condensed_box,{fit_string}]({gid}) {{}}; """
         out += fr"\node[] at ({gid}.{self.condense}) {{{self.tex_id}}};"
+        if hasattr(self, "label"):
+            label_pos = getattr(self, "label_pos", "north east")
+            out += fr"\node[annex_multistep_caption_text,anchor={label_pos}] at ({gid}.{label_pos}) {{{self.label}}};"
         return out
         
     def walk(self):
