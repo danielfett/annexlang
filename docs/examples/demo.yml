@@ -17,6 +17,7 @@ protocol:
     !Party
     name: \faServer\ IdP
     style: server
+    multiple: True
   - &b1i
     !Party
     name: \faFile\ \url{idp.example/}

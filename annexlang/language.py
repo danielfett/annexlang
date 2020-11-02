@@ -226,7 +226,13 @@ class EndParty(ProtocolStep):
     def tikz(self):
         pos = self.get_pos(self.party.column, self.line)
         text = self.party.name
-        out = fr"""\node[name={self.node_name},annex_{self.type}_box,{self.party.style}] at ({pos}) {{{text}}};"""
+        out = ""
+        if getattr(self.party, "multiple", False):
+            for c in reversed(range(1, 3)):
+                shift = f"{c*.5}mm"
+                name = self.create_affecting_node_name()
+                out += fr"\node[name={name},annex_{self.type}_box,{self.party.style},yshift={shift},xshift={shift}] at ({pos}) {{{text}}};"
+        out += fr"""\node[name={self.node_name},annex_{self.type}_box,{self.party.style}] at ({pos}) {{{text}}};"""
         return out
 
     @property
