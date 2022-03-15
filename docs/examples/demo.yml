@@ -152,6 +152,8 @@ protocol:
     parameters: $\mathit{offer}$
   - !Serial
     lifeline_style: annex_lifeline_dashed
+    label: "This part is\\\\not optional"
+    label_pos: north west  # Default is north east, any TikZ node anchor name will do (e.g., "90")
     steps:
       - !http-request
         src: *example
