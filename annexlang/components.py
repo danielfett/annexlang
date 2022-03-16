@@ -183,10 +183,12 @@ class ProtocolStep(ProtocolObject):
 
     @property
     def lines_below(self):
+        # TODO also split on \\
         return self.text_below.strip().split("\n")
 
     @property
     def lines_above(self):
+        # TODO also split on \\
         return self.text_above.strip().split("\n")
         
     

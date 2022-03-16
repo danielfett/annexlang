@@ -60,7 +60,7 @@ class TikzPicture:
                 if i < (len(self.protocol.columns) - 1) and hasattr(self.protocol.columns[i+1], 'extrawidth'):
                     extrawidths.append(self.protocol.columns[i+1]['extrawidth'] + "/2")
                 if i < (len(self.protocol.columns) - 1):
-                    f.write(r""" &""" )
+                    f.write(r""" &""")
                     if extrawidths:
                         f.write(f"[{'+'.join(extrawidths)}]")
                     
@@ -79,7 +79,7 @@ class TikzPicture:
         f.write("\n% MAIN LAYER\n\n")
         for step in self.protocol.walk():
             f.write(step.tikz_desc())
-            f.write("\n");
+            f.write("\n")
             f.write(step.tikz())
             f.write("\n\n")
             
@@ -87,7 +87,7 @@ class TikzPicture:
         f.write(r"""\begin{pgfonlayer}{arrows}""")
         for step in self.protocol.walk():
             f.write(step.tikz_desc())
-            f.write("\n");
+            f.write("\n")
             f.write(step.tikz_arrows())
             f.write("\n\n")
         f.write(r"""\end{pgfonlayer}""")
@@ -97,7 +97,7 @@ class TikzPicture:
             f.write(r"""\begin{pgfonlayer}{groups}""")
             for group in self.protocol.groups:
                 f.write(group.tikz_desc())
-                f.write("\n");
+                f.write("\n")
                 f.write(group.tikz_groups(self.count_lines()))
                 f.write("\n\n")
             f.write(r"""\end{pgfonlayer}""")
