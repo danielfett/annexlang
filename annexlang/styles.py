@@ -49,6 +49,7 @@ class StyleDefault(yaml.YAMLObject):
     annex_postmessage_text/.style={font=\sffamily\tiny\color{red}},
     annex_comment_text/.style={font=\bfseries},
     annex_multistep_caption_text/.style={font=\sffamily\tiny\color{blue}},
+    annex_note/.style={},
     % Debug nodes/captions
     annex_debug/.style={opacity=0},
     """

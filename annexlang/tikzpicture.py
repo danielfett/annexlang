@@ -106,7 +106,9 @@ class TikzPicture:
         f.write(r"""\begin{pgfonlayer}{markers}""")
         for step in self.protocol.walk():
             f.write(step.tikz_desc())
-            f.write("\n");
+            f.write("\n")
+            f.write(step.tikz_notes())
+            f.write("\n")
             f.write(step.tikz_markers())
             f.write("\n\n")
         f.write(r"""\end{pgfonlayer}""")

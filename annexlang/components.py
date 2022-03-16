@@ -63,6 +63,7 @@ class ProtocolStep(ProtocolObject):
     text_style = "annex_arrow_text"
     _affecting_nodes = []
     style = ""
+    note_style = ""
     counter = None  # manually set number of this protocol step, if any
     
     def length(self):
@@ -75,6 +76,9 @@ class ProtocolStep(ProtocolObject):
         return ""
 
     def tikz_arrows(self):
+        return ""
+
+    def tikz_notes(self):
         return ""
 
     def tikz_markers(self):
@@ -95,6 +99,12 @@ class ProtocolStep(ProtocolObject):
     def tikz_extra_style(self):
         if self.style:
             return f",{self.style}"
+        return ""
+
+    @cached_property
+    def tikz_note_style(self):
+        if self.note_style:
+            return f",{self.note_style}"
         return ""
 
     @cached_property

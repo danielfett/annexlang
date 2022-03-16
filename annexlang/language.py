@@ -28,8 +28,25 @@ class GenericMessage(ProtocolStep):
     def tikz_arrows(self):
         src = self.get_pos(self.src.column, self.line)
         dest = self.get_pos(self.dest.column, self.line)
-        return fr"""%% draw {self.type}
+        out = fr"""%% draw {self.type}
             \draw[annex_{self.type}{self.tikz_extra_style}] ({src}) to {self.tikz_above} {self.tikz_below} ({dest}); """
+        return out
+
+    def tikz_notes(self):
+        out = ""
+        src = self.get_pos(self.src.column, self.line)
+        dest = self.get_pos(self.dest.column, self.line)
+        if hasattr(self, 'note_right'):
+            right_node = src if self.src.column > self.dest.column else dest
+            out += fr"""\node[right=1pt of {right_node},anchor=west,
+                            inner sep=0pt,annex_note{self.tikz_note_style}
+                           ] {'{' + self.contour(self.note_right) + '}'}; """
+        if hasattr(self, 'note_left'):
+            left_node = src if self.src.column < self.dest.column else dest
+            out += fr"""\node[left=1pt of {left_node},anchor=east,
+                            inner sep=0pt,annex_note{self.tikz_note_style}
+                           ] {'{' + self.contour(self.note_left) + '}'}; """
+        return out
 
     @property
     def height(self):
@@ -50,12 +67,6 @@ class OutOfScopeMessage(GenericMessage):
     caption_below = ""
     type = "out_of_scope_message"
     id_above = True
-
-    def tikz_arrows(self):
-        src = self.get_pos(self.src.column, self.line)
-        dest = self.get_pos(self.dest.column, self.line)
-        return fr"""%% draw {self.type}
-            \draw[annex_{self.type}{self.tikz_extra_style}] ({src}) to {self.tikz_above} {self.tikz_below} ({dest});"""
 
 
 class HTTPRequest(GenericMessage):
@@ -203,6 +214,18 @@ class Action(ProtocolStep):
         pos = self.get_pos(self.party.column, self.line)
         text = self.tex_id + self.contour(self.label)
         out = fr"""\node[annex_action,name={self.node_name}{self.tikz_extra_style}] at ({pos}) {{{text}}};"""
+        return out
+
+    def tikz_notes(self):
+        out = ""
+        if hasattr(self, 'note_right'):
+            out += fr"""\node[right=1pt of {self.node_name},anchor=west,
+                            inner sep=0pt,annex_note{self.tikz_note_style}
+                           ] {'{' + self.contour(self.note_right) + '}'}; """
+        if hasattr(self, 'note_left'):
+            out += fr"""\node[left=1pt of {self.node_name},anchor=east,
+                            inner sep=0pt,annex_note{self.tikz_note_style}
+                           ] {'{' + self.contour(self.note_left) + '}'}; """
         return out
 
     @property
