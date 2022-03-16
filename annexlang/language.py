@@ -1,18 +1,17 @@
 from .components import ProtocolStep
 
 
-class HTTPRequest(ProtocolStep):
-    yaml_tag = '!http-request'
-    method = ""
-    url = ""
-    parameters = ""
-    type = "http_request"
+class GenericMessage(ProtocolStep):
+    yaml_tag = '!msg'
+    caption = ""
+    caption_below = ""
+    type = "message"
     id_above = True
 
     def _init(self, *args, **kwargs):
         super()._init(*args, **kwargs)
-        self.text_above = " ".join((self.method, self.url, )).strip()
-        self.text_below = self.parameters
+        self.text_above = self.caption
+        self.text_below = self.caption_below
         if hasattr(self, 'reply_to'):
             self.dest = self.reply_to.src
             self.src = self.reply_to.dest
@@ -25,23 +24,52 @@ class HTTPRequest(ProtocolStep):
     def affected_parties(self):
         yield self.src
         yield self.dest
-    
+
     def tikz_arrows(self):
         src = self.get_pos(self.src.column, self.line)
         dest = self.get_pos(self.dest.column, self.line)
         return fr"""%% draw {self.type}
-        \draw[annex_{self.type}{self.tikz_extra_style}] ({src}) to {self.tikz_above} {self.tikz_below} ({dest});"""
+            \draw[annex_{self.type}{self.tikz_extra_style}] ({src}) to {self.tikz_above} {self.tikz_below} ({dest}); """
 
     @property
     def height(self):
         if self.tikz_above and self.tikz_below:
-            return "4ex" + ("+2ex" * len(self.lines_below)), "north,yshift=3ex"
+            yshift = f'{1 + 2*len(self.lines_above)}ex'
+            return "2ex" + ("+2ex" * len(self.lines_above)) + ("+2ex" * len(self.lines_below)), f"north,yshift={yshift}"
         elif self.tikz_above:
-            return "4ex", "south,yshift=-1ex"
+            return "2ex" + ("+2ex" * len(self.lines_above)), "south,yshift=-1ex"
         elif self.tikz_below:
             return "2ex" + ("+2ex" * len(self.lines_below)), "north,yshift=1ex"
         else:
             return "1ex", "center"
+
+
+class OutOfScopeMessage(GenericMessage):
+    yaml_tag = '!out-of-scope-msg'
+    caption = ""
+    caption_below = ""
+    type = "out_of_scope_message"
+    id_above = True
+
+    def tikz_arrows(self):
+        src = self.get_pos(self.src.column, self.line)
+        dest = self.get_pos(self.dest.column, self.line)
+        return fr"""%% draw {self.type}
+            \draw[annex_{self.type}{self.tikz_extra_style}] ({src}) to {self.tikz_above} {self.tikz_below} ({dest});"""
+
+
+class HTTPRequest(GenericMessage):
+    yaml_tag = '!http-request'
+    method = ""
+    url = ""
+    parameters = ""
+    type = "http_request"
+    id_above = True
+
+    def _init(self, *args, **kwargs):
+        super()._init(*args, **kwargs)
+        self.text_above = " ".join((self.method, self.url, )).strip()
+        self.text_below = self.parameters
 
 
 class XHRRequest(HTTPRequest):

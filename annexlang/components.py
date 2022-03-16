@@ -107,7 +107,7 @@ class ProtocolStep(ProtocolObject):
                 self.id.replace("_", r"\_") if getattr(self, 'id', False) else '',
                 self.create_affecting_node_name(parties=[]),
                 self.tex_id if getattr(self, 'id_above', False) else '',
-                self.contour(self.text_above)
+                self.contour(r'\\'.join(self.lines_above))
             )
 
     @cached_property
@@ -174,6 +174,10 @@ class ProtocolStep(ProtocolObject):
     @property
     def lines_below(self):
         return self.text_below.strip().split("\n")
+
+    @property
+    def lines_above(self):
+        return self.text_above.strip().split("\n")
         
     
 class MultiStep(ProtocolStep):
