@@ -43,6 +43,7 @@ class StyleDefault(yaml.YAMLObject):
     annex_close_window_end_party_box/.style={annex_end_party_box},
     annex_close_window_end_party_arrow/.style={->,line,dashed},
     annex_separator/.style={seperatorline,dashed},
+    annex_vertical_space/.style={},
     % text styles
     annex_arrow_text/.style={font=\sffamily\tiny},
     annex_postmessage_text/.style={font=\sffamily\tiny\color{red}},
@@ -63,5 +64,6 @@ class StyleDebug(yaml.YAMLObject):
     annex_group_title_placeholder/.style={draw=pink},
     annex_script_action_box/.style={draw=yellow},
     annex_script_action_arrow/.style={->,draw=yellow},
+    annex_vertical_space/.style={fill=magenta,opacity=.1},
     annex_debug/.style={draw=none,opacity=.5},
     """

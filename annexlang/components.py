@@ -401,6 +401,26 @@ class Separator(ProtocolStep):
         return cls()
 
 
+class VerticalSpace(ProtocolStep):
+    yaml_tag = '!VerticalSpace'
+    skip_number = True
+    amount = "0ex"
+    valign = "south"  # Useful when used with grouping/boxes around things
+
+    def _init(self, *args, **kwargs):
+        super()._init(*args, **kwargs)
+        self.node_name = self.create_affecting_node_name()
+
+    def tikz(self):
+        pos = self.get_pos(self.party.column, self.line)
+        out = fr"""\node[annex_vertical_space,inner sep=0pt,name={self.node_name}] at ({pos}) {{}};"""
+        return out
+
+    @property
+    def height(self):
+        return self.amount, self.valign
+
+
 class Comment(ProtocolStep):
     yaml_tag = '!comment'
     id_above = False
