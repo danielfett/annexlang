@@ -221,7 +221,7 @@ class MultiStep(ProtocolStep):
         out += fr"\node[] at ({gid}.{self.condense}) {{{self.tex_id}}};"
         if hasattr(self, "label"):
             label_pos = getattr(self, "label_pos", "north east")
-            out += fr"\node[annex_multistep_caption_text,anchor={label_pos}] at ({gid}.{label_pos}) {{{self.label}}};"
+            out += fr"\node[annex_multistep_caption_text,anchor={label_pos}] at ({gid}.{label_pos}) {{{self.contour(self.label)}}};"
         return out
         
     def walk(self):
