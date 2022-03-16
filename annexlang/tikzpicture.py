@@ -5,6 +5,7 @@ class TikzPicture:
         'rowsep': '4ex',
         'enumerate': '',
         'styles': [],
+        'tex_intro': '',
     }
     
     def __init__(self, annexfile):
@@ -19,6 +20,7 @@ class TikzPicture:
         self.dump_footer(f)
 
     def dump_header(self, f):
+        f.write(self.options['tex_intro'])
         style_string = ','.join(
             s.style.strip().strip(',') for s in self.options['styles']
         )
