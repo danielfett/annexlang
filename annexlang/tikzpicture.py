@@ -111,7 +111,6 @@ class TikzPicture:
             f.write("\n\n")
         f.write(r"""\end{pgfonlayer}""")
 
-            
     def dump_footer(self, f):
         f.write(r"""
         \end{tikzpicture}

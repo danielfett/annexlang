@@ -1,9 +1,11 @@
 import yaml
 
+
 class StyleCustom(yaml.YAMLObject):
     yaml_tag = "!style-custom"
     style = ''
-        
+
+
 class StyleDefault(yaml.YAMLObject):
     yaml_tag = "!style-default"
     style = r"""
@@ -43,8 +45,11 @@ class StyleDefault(yaml.YAMLObject):
     annex_arrow_text/.style={font=\sffamily\tiny},
     annex_postmessage_text/.style={font=\sffamily\tiny\color{red}},
     annex_comment_text/.style={font=\bfseries},
-    annex_multistep_caption_text/.style={font=\sffamily\tiny\color{blue}}
+    annex_multistep_caption_text/.style={font=\sffamily\tiny\color{blue}},
+    % Debug nodes/captions
+    annex_debug/.style={opacity=0},
     """
+
 
 class StyleDebug(yaml.YAMLObject):
     yaml_tag = "!style-debug"
@@ -53,8 +58,8 @@ class StyleDebug(yaml.YAMLObject):
     annex_group_box/.style={fill=cyan!20},
     annex_matrix_node/.style={draw=red},
     annex_matrix_dummy_height/.style={draw=green},
-    annex_group_title_placeholder/.style={draw=pink}
+    annex_group_title_placeholder/.style={draw=pink},
     annex_script_action_box/.style={draw=yellow},
     annex_script_action_arrow/.style={->,draw=yellow},
-
+    annex_debug/.style={draw=none,opacity=.5},
     """

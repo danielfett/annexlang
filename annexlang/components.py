@@ -102,8 +102,9 @@ class ProtocolStep(ProtocolObject):
         if not self.text_above and (not getattr(self, 'id_above', True) or not self.tex_id):
             return ""
         else:
-            return r"""node [%s,above=2.6pt,anchor=base](%s){%s%s}""" % (
+            return r"""node [%s,above=2.6pt,anchor=base,pin={[pin distance=-8pt,pin edge={draw=none},annex_debug]90:%s}](%s){%s%s}""" % (
                 self.text_style,
+                self.id.replace("_", r"\_") if getattr(self, 'id', False) else '',
                 self.create_affecting_node_name(parties=[]),
                 self.tex_id if getattr(self, 'id_above', False) else '',
                 self.contour(self.text_above)
