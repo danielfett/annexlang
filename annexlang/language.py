@@ -1,18 +1,17 @@
 from .components import ProtocolStep
 
 
-class HTTPRequest(ProtocolStep):
-    yaml_tag = '!http-request'
-    method = ""
-    url = ""
-    parameters = ""
-    type = "http_request"
+class GenericMessage(ProtocolStep):
+    yaml_tag = '!msg'
+    caption = ""
+    caption_below = ""
+    type = "message"
     id_above = True
 
     def _init(self, *args, **kwargs):
         super()._init(*args, **kwargs)
-        self.text_above = " ".join((self.method, self.url, )).strip()
-        self.text_below = self.parameters
+        self.text_above = str(self.caption)
+        self.text_below = str(self.caption_below)
         if hasattr(self, 'reply_to'):
             self.dest = self.reply_to.src
             self.src = self.reply_to.dest
@@ -25,23 +24,65 @@ class HTTPRequest(ProtocolStep):
     def affected_parties(self):
         yield self.src
         yield self.dest
-    
+
     def tikz_arrows(self):
         src = self.get_pos(self.src.column, self.line)
         dest = self.get_pos(self.dest.column, self.line)
-        return fr"""%% draw {self.type}
-        \draw[annex_{self.type}{self.tikz_extra_style}] ({src}) to {self.tikz_above} {self.tikz_below} ({dest});"""
+        out = fr"""%% draw {self.type}
+            \draw[annex_{self.type}{self.tikz_extra_style}] ({src}) to {self.tikz_above} {self.tikz_below} ({dest}); """
+        return out
+
+    def tikz_notes(self):
+        out = ""
+        src = self.get_pos(self.src.column, self.line)
+        dest = self.get_pos(self.dest.column, self.line)
+        if hasattr(self, 'note_right'):
+            note_right_for_tex = str(self.note_right).strip().replace('\n', '\\\\')
+            right_node = src if self.src.column > self.dest.column else dest
+            out += fr"""\node[right=1pt of {right_node},anchor=west,
+                            inner sep=0pt,annex_note{self.tikz_note_style}
+                           ] {'{' + self.contour(note_right_for_tex) + '}'}; """
+        if hasattr(self, 'note_left'):
+            note_left_for_tex = str(self.note_left).strip().replace('\n', '\\\\')
+            left_node = src if self.src.column < self.dest.column else dest
+            out += fr"""\node[left=1pt of {left_node},anchor=east,
+                            inner sep=0pt,annex_note{self.tikz_note_style}
+                           ] {'{' + self.contour(note_left_for_tex) + '}'}; """
+        return out
 
     @property
     def height(self):
-        if self.tikz_above and self.tikz_below:
-            return "4ex" + ("+2ex" * len(self.lines_below)), "north,yshift=3ex"
-        elif self.tikz_above:
-            return "4ex", "south,yshift=-1ex"
-        elif self.tikz_below:
-            return "2ex" + ("+2ex" * len(self.lines_below)), "north,yshift=1ex"
+        if len(self.lines_above) and len(self.lines_below):
+            yshift = f'{1 + 2*len(self.lines_above)}ex'
+            return "2ex" + ("+2ex" * len(self.lines_above)) + ("+1.6ex" * len(self.lines_below)), f"north,yshift={yshift}"
+        elif len(self.lines_above):
+            return "2ex" + ("+2ex" * len(self.lines_above)), "south,yshift=-1ex"
+        elif len(self.lines_below):
+            return "2ex" + ("+1.6ex" * len(self.lines_below)), "north,yshift=1ex"
         else:
             return "1ex", "center"
+
+
+class OutOfScopeMessage(GenericMessage):
+    yaml_tag = '!out-of-scope-msg'
+    caption = ""
+    caption_below = ""
+    type = "out_of_scope_message"
+    id_above = True
+
+
+class HTTPRequest(GenericMessage):
+    yaml_tag = '!http-request'
+    method = ""
+    url = ""
+    parameters = ""
+    type = "http_request"
+    id_above = True
+
+    def _init(self, *args, **kwargs):
+        super()._init(*args, **kwargs)
+        self.text_above = " ".join((str(self.method), str(self.url), )).strip()
+        self.text_below = str(self.parameters)
 
 
 class XHRRequest(HTTPRequest):
@@ -57,10 +98,10 @@ class HTTPResponse(HTTPRequest):
     
     def _init(self, *args, **kwargs):
         super()._init(*args, **kwargs)
-        self.text_above = " ".join((self.code, self.headers, )).strip()
+        self.text_above = " ".join((str(self.code), str(self.headers), )).strip()
         if not self.text_above and not self.skip_number:
             self.text_above = 'Response'
-        self.text_below = self.parameters
+        self.text_below = str(self.parameters)
 
 
 class XHRResponse(HTTPResponse):
@@ -75,7 +116,7 @@ class Websocket(HTTPRequest):
     def _init(self, *args, **kwargs):
         super()._init(*args, **kwargs)
         self.text_above = "WebSocket"
-        self.text_below = self.parameters
+        self.text_below = str(self.parameters)
     
 
 class HTTPRequestResponse(HTTPRequest):
@@ -129,8 +170,8 @@ class PostMessage(ProtocolStep):
 
     def _init(self, *args, **kwargs):
         super()._init(*args, **kwargs)
-        self.text_above = self.body
-        self.text_below = self.comment
+        self.text_above = str(self.body)
+        self.text_below = str(self.comment)
         self._affecting_nodes = [
             self.get_pos(self.src.column, self.line),
             self.get_pos(self.dest.column, self.line)
@@ -173,13 +214,27 @@ class Action(ProtocolStep):
 
     def tikz(self):
         pos = self.get_pos(self.party.column, self.line)
-        text = self.tex_id + self.contour(self.label)
+        text = self.tex_id + self.contour(str(self.label))
         out = fr"""\node[annex_action,name={self.node_name}{self.tikz_extra_style}] at ({pos}) {{{text}}};"""
+        return out
+
+    def tikz_notes(self):
+        out = ""
+        if hasattr(self, 'note_right'):
+            note_right_for_tex = str(self.note_right).strip().replace('\n', '\\\\')
+            out += fr"""\node[right=1pt of {self.node_name},anchor=west,
+                            inner sep=0pt,annex_note{self.tikz_note_style}
+                           ] {'{' + self.contour(note_right_for_tex) + '}'}; """
+        if hasattr(self, 'note_left'):
+            note_left_for_tex = str(self.note_left).strip().replace('\n', '\\\\')
+            out += fr"""\node[left=1pt of {self.node_name},anchor=east,
+                            inner sep=0pt,annex_note{self.tikz_note_style}
+                           ] {'{' + self.contour(note_left_for_tex) + '}'}; """
         return out
 
     @property
     def height(self):
-        h = 1 + 2 * len(self.label.split("\\\\"))
+        h = 1 + 2 * len(str(self.label).split("\\\\"))
         return f"{h}ex", "center"
 
     
@@ -197,7 +252,7 @@ class ScriptAction(Action):
         direction = "east" if self.src.column < self.dest.column else "west"
         src = self.get_pos(self.src.column, self.line)
         dest = self.get_pos(self.dest.column, self.line)
-        self.text_above = self.data
+        self.text_above = str(self.data)
         rev = "_reversed" if getattr(self, 'reversed', False) else ''
         return fr"""%% draw script action arrow
         \draw[annex_script_action_arrow{rev}{self.tikz_extra_style}] ({self.node_name}.{direction}) to  {self.tikz_above} ({dest});"""
@@ -226,7 +281,13 @@ class EndParty(ProtocolStep):
     def tikz(self):
         pos = self.get_pos(self.party.column, self.line)
         text = self.party.name
-        out = fr"""\node[name={self.node_name},annex_{self.type}_box,{self.party.style}] at ({pos}) {{{text}}};"""
+        out = ""
+        if getattr(self.party, "multiple", False):
+            for c in reversed(range(1, 3)):
+                shift = f"{c*.5}mm"
+                name = self.create_affecting_node_name()
+                out += fr"\node[name={name},annex_{self.type}_box,{self.party.style},yshift={shift},xshift={shift}] at ({pos}) {{{text}}};"
+        out += fr"""\node[name={self.node_name},annex_{self.type}_box,{self.party.style}] at ({pos}) {{{text}}};"""
         return out
 
     @property

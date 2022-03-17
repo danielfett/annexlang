@@ -63,6 +63,7 @@ class ProtocolStep(ProtocolObject):
     text_style = "annex_arrow_text"
     _affecting_nodes = []
     style = ""
+    note_style = ""
     counter = None  # manually set number of this protocol step, if any
     
     def length(self):
@@ -75,6 +76,9 @@ class ProtocolStep(ProtocolObject):
         return ""
 
     def tikz_arrows(self):
+        return ""
+
+    def tikz_notes(self):
         return ""
 
     def tikz_markers(self):
@@ -98,15 +102,22 @@ class ProtocolStep(ProtocolObject):
         return ""
 
     @cached_property
+    def tikz_note_style(self):
+        if self.note_style:
+            return f",{self.note_style}"
+        return ""
+
+    @cached_property
     def tikz_above(self):
         if not self.text_above and (not getattr(self, 'id_above', True) or not self.tex_id):
             return ""
         else:
-            return r"""node [%s,above=2.6pt,anchor=base](%s){%s%s}""" % (
+            return r"""node [%s,above=2.6pt,anchor=base,pin={[pin distance=-8pt,pin edge={draw=none},annex_debug]90:%s}](%s){%s%s}""" % (
                 self.text_style,
+                self.id.replace("_", r"\_") if getattr(self, 'id', False) else '',
                 self.create_affecting_node_name(parties=[]),
                 self.tex_id if getattr(self, 'id_above', False) else '',
-                self.contour(self.text_above)
+                self.contour(r'\\'.join(self.lines_above))
             )
 
     @cached_property
@@ -172,7 +183,17 @@ class ProtocolStep(ProtocolObject):
 
     @property
     def lines_below(self):
-        return self.text_below.strip().split("\n")
+        if self.text_below.strip():
+            return self.text_below.strip().replace(r"\\\\", "\n").split("\n")
+        else:
+            return list()
+
+    @property
+    def lines_above(self):
+        if self.text_above.strip():
+            return self.text_above.strip().replace(r"\\\\", "\n").split("\n")
+        else:
+            return list()
         
     
 class MultiStep(ProtocolStep):
@@ -184,17 +205,15 @@ class MultiStep(ProtocolStep):
             d.draw()
 
     def _init(self, protocol, counter, skip_number):
-        if self.condense or skip_number:
+        if self.condense:
             self.skip_number = False
-            skip_numbers = True
-        else:
-            skip_numbers = False
+        skip_inner_numbers = getattr(self, "skip_inner_numbers", self.condense)
         super()._init(protocol, counter, skip_number)
         for step in self.steps:
-            step._init(protocol, counter, skip_numbers)
+            step._init(protocol, counter, skip_inner_numbers)
 
     def tikz_markers(self):
-        if not self.condense:
+        if not self.condense and not hasattr(self, "label"):
             return ""
 
         if type(self.condense) is not str:
@@ -204,6 +223,9 @@ class MultiStep(ProtocolStep):
         gid = self.annexid
         out = fr"""\node[annex_condensed_box,{fit_string}]({gid}) {{}}; """
         out += fr"\node[] at ({gid}.{self.condense}) {{{self.tex_id}}};"
+        if hasattr(self, "label"):
+            label_pos = getattr(self, "label_pos", "north east")
+            out += fr"\node[annex_multistep_caption_text,anchor={label_pos}] at ({gid}.{label_pos}) {{{self.contour(self.label)}}};"
         return out
         
     def walk(self):
@@ -395,6 +417,26 @@ class Separator(ProtocolStep):
         return cls()
 
 
+class VerticalSpace(ProtocolStep):
+    yaml_tag = '!VerticalSpace'
+    skip_number = True
+    amount = "0ex"
+    valign = "south"  # Useful when used with grouping/boxes around things
+
+    def _init(self, *args, **kwargs):
+        super()._init(*args, **kwargs)
+        self.node_name = self.create_affecting_node_name()
+
+    def tikz(self):
+        pos = self.get_pos(self.party.column, self.line)
+        out = fr"""\node[annex_vertical_space,inner sep=0pt,name={self.node_name}] at ({pos}) {{}};"""
+        return out
+
+    @property
+    def height(self):
+        return self.amount, self.valign
+
+
 class Comment(ProtocolStep):
     yaml_tag = '!comment'
     id_above = False
@@ -404,7 +446,7 @@ class Comment(ProtocolStep):
     def tikz_arrows(self):
         src = self.get_pos(self.protocol.parties[0].column, self.line)
         dest = self.get_pos(self.protocol.parties[-1].column, self.line)
-        self.text_below = self.label
+        self.text_below = str(self.label)
         out = fr"""%% draw comment
         \draw[draw=none] ({src}) to {self.tikz_below} ({dest});"""
         out += super().tikz_arrows()
