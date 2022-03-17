@@ -133,7 +133,9 @@ Represented as arrows between two parties' lifelines.
   style: ''  # Additional TikZ style to apply to arrow
   skip_number: false  # Default: false. If true, do not assign a number to this step
   draw_contour: true # Default: true. Draw a white contour around all text belonging to this step
-  note_right: 'A note that is shown on the right of the arrow.\\Line breaks MUST be LaTeX-\\line breaks'
+  note_right: |
+    A note that is shown on the right of the
+    arrow. Line breaks are possible here, as well
   note_left: 'See note\_right, except this one is to the left'
   note_style: 'cyan' # Additional TikZ style applied to note_right/note_left
 ```
