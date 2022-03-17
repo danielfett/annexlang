@@ -183,13 +183,17 @@ class ProtocolStep(ProtocolObject):
 
     @property
     def lines_below(self):
-        # TODO also split on \\
-        return self.text_below.strip().split("\n")
+        if self.text_below.strip():
+            return self.text_below.strip().replace(r"\\\\", "\n").split("\n")
+        else:
+            return list()
 
     @property
     def lines_above(self):
-        # TODO also split on \\
-        return self.text_above.strip().split("\n")
+        if self.text_above.strip():
+            return self.text_above.strip().replace(r"\\\\", "\n").split("\n")
+        else:
+            return list()
         
     
 class MultiStep(ProtocolStep):
