@@ -73,6 +73,7 @@ protocol:
       !Party
       name: Browser  # Visible name of the party
       style: ''  # TikZ style applied to party's start and end nodes
+      multiple: false # If true, the party's start and end nodes will look like a stack of instances
     - &server
       !Party
       name: Webserver
