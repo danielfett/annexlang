@@ -52,13 +52,13 @@ class GenericMessage(ProtocolStep):
 
     @property
     def height(self):
-        if self.tikz_above and self.tikz_below:
+        if len(self.lines_above) and len(self.lines_below):
             yshift = f'{1 + 2*len(self.lines_above)}ex'
-            return "2ex" + ("+2ex" * len(self.lines_above)) + ("+2ex" * len(self.lines_below)), f"north,yshift={yshift}"
-        elif self.tikz_above:
+            return "2ex" + ("+2ex" * len(self.lines_above)) + ("+1.6ex" * len(self.lines_below)), f"north,yshift={yshift}"
+        elif len(self.lines_above):
             return "2ex" + ("+2ex" * len(self.lines_above)), "south,yshift=-1ex"
-        elif self.tikz_below:
-            return "2ex" + ("+2ex" * len(self.lines_below)), "north,yshift=1ex"
+        elif len(self.lines_below):
+            return "2ex" + ("+1.6ex" * len(self.lines_below)), "north,yshift=1ex"
         else:
             return "1ex", "center"
 
