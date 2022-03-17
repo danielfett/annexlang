@@ -15,3 +15,5 @@ To convert a file from Annex to TeX, just run
 
 If you use a chart generated with Annex in your publication, please
 include a notice (e.g., "Chart generated with Annex.") somewhere. 
+
+See docs/ for some documentation and examples.
