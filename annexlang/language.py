@@ -37,15 +37,17 @@ class GenericMessage(ProtocolStep):
         src = self.get_pos(self.src.column, self.line)
         dest = self.get_pos(self.dest.column, self.line)
         if hasattr(self, 'note_right'):
+            note_right_for_tex = self.note_right.strip().replace('\n', '\\\\')
             right_node = src if self.src.column > self.dest.column else dest
             out += fr"""\node[right=1pt of {right_node},anchor=west,
                             inner sep=0pt,annex_note{self.tikz_note_style}
-                           ] {'{' + self.contour(self.note_right) + '}'}; """
+                           ] {'{' + self.contour(note_right_for_tex) + '}'}; """
         if hasattr(self, 'note_left'):
+            note_left_for_tex = self.note_left.strip().replace('\n', '\\\\')
             left_node = src if self.src.column < self.dest.column else dest
             out += fr"""\node[left=1pt of {left_node},anchor=east,
                             inner sep=0pt,annex_note{self.tikz_note_style}
-                           ] {'{' + self.contour(self.note_left) + '}'}; """
+                           ] {'{' + self.contour(note_left_for_tex) + '}'}; """
         return out
 
     @property
