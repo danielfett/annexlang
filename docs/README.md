@@ -250,6 +250,7 @@ The arrow heads of responses' arrows are empty (as opposed to the filled arrow h
   id: 'some-script-action'
   data: 'Data'
   label: 'Browser does stuff'
+  reversed: false  # If true, the action "receives" data instead of "sending" it
   skip_number: false
   draw_contour: true
   style: ''
