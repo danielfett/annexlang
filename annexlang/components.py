@@ -446,7 +446,7 @@ class Comment(ProtocolStep):
     def tikz_arrows(self):
         src = self.get_pos(self.protocol.parties[0].column, self.line)
         dest = self.get_pos(self.protocol.parties[-1].column, self.line)
-        self.text_below = self.label
+        self.text_below = str(self.label)
         out = fr"""%% draw comment
         \draw[draw=none] ({src}) to {self.tikz_below} ({dest});"""
         out += super().tikz_arrows()
