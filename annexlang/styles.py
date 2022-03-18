@@ -1,16 +1,42 @@
 import yaml
+import re
 
 
-class StyleCustom(yaml.YAMLObject):
+class AnnexStyle(yaml.YAMLObject):
+    yaml_tag = None
+    default_placeholders = dict()
+    placeholders = dict()
+
+    def get_style(self):
+        placeholders = self.default_placeholders
+        placeholders.update(self.placeholders)
+        style = getattr(self, 'style', '')
+        # Check for missing replacements (to avoid confusing TeX errors)
+        for occurence in re.finditer(r'{\|([^|]*)\|}', style):
+            placeholder = occurence.groups()[0]
+            if placeholder not in placeholders:
+                raise Exception(f"undefined placeholder '{placeholder}' for {self.yaml_tag}")
+        for placeholder, replacement in placeholders.items():
+            style = style.replace(f'{{|{placeholder}|}}', replacement)
+        return style.strip().strip(',')
+
+
+class StyleCustom(AnnexStyle):
     yaml_tag = "!style-custom"
     style = ''
 
 
-class StyleDefault(yaml.YAMLObject):
+class StyleDefault(AnnexStyle):
     yaml_tag = "!style-default"
+
+    default_placeholders = {
+        'default_font_size': r'\tiny',
+        'default_font_family': r'\sffamily'
+    }
+
     style = r"""
     % basics
-    every node/.style={font=\sffamily\tiny, align=center},
+    every node/.style={font={|default_font_family|}{|default_font_size|}, align=center},
     annex_lifeline/.style={draw=black!30},
     annex_matrix_node/.style={},
     annex_matrix_dummy_height/.style={},
@@ -45,17 +71,17 @@ class StyleDefault(yaml.YAMLObject):
     annex_separator/.style={seperatorline,dashed},
     annex_vertical_space/.style={},
     % text styles
-    annex_arrow_text/.style={font=\sffamily\tiny},
-    annex_postmessage_text/.style={font=\sffamily\tiny\color{red}},
+    annex_arrow_text/.style={font={|default_font_family|}{|default_font_size|}},
+    annex_postmessage_text/.style={font={|default_font_family|}{|default_font_size|}\color{red}},
     annex_comment_text/.style={font=\bfseries},
-    annex_multistep_caption_text/.style={font=\sffamily\tiny\color{blue}},
+    annex_multistep_caption_text/.style={font={|default_font_family|}{|default_font_size|}\color{blue}},
     annex_note/.style={align=left},
     % Debug nodes/captions
     annex_debug/.style={opacity=0},
     """
 
 
-class StyleDebug(yaml.YAMLObject):
+class StyleDebug(AnnexStyle):
     yaml_tag = "!style-debug"
 
     style = """
