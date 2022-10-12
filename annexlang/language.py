@@ -215,7 +215,9 @@ class Action(ProtocolStep):
     def tikz(self):
         pos = self.get_pos(self.party.column, self.line)
         text = self.tex_id + self.contour(str(self.label))
-        out = fr"""\node[annex_action,name={self.node_name}{self.tikz_extra_style}] at ({pos}) {{{text}}};"""
+        tex_label = self.id.replace("_", r"\_") if getattr(self, 'id', False) else ''
+        out = fr"""\node[annex_action,name={self.node_name}{self.tikz_extra_style},"""
+        out += fr"""pin={{[pin distance=-6pt,pin edge={{draw=none}},annex_debug]90:{{{tex_label}}} }}] at ({pos}) {{{text}}};"""
         return out
 
     def tikz_notes(self):
