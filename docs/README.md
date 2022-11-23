@@ -84,6 +84,7 @@ protocol:
     - &server
       !Party
       name: Webserver
+      column: *browser  # Can be used to put several parties in one column
     - &placeholder-column
       !dummy-party  # dummy-parties "reserve" a column, e.g., for notes.
   
