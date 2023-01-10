@@ -22,7 +22,7 @@ class TikzPicture:
     def dump_header(self, f):
         f.write(self.options['tex_intro'])
         style_string = ','.join(
-            s.style.strip().strip(',') for s in self.options['styles']
+            s.get_style() for s in self.options['styles']
         )
         f.write(r"""
         \begin{tikzpicture}[%s]

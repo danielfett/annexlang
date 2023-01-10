@@ -22,11 +22,14 @@ This dictionary may contain the following keys:
    - E.g., `\setcounter{protostep}{%d}\protostep{%s}` with an appropriately defined macro `\protostep` which uses the `protostep` counter and the given string to show the step number in a TikZ node and assign the given string as TikZ node name to that circle.
  - `colsep`: LaTeX distance between parties' lifelines, e.g., `0.2\textwidth`
  - `rowsep`: Like `colsep`, but for (additional) vertical distance between steps
- - `styles`: A list of style definitions, using the following elements
-   - `!style-default {}`: The default style provided by annex
+ - `styles`: A list of style definitions, using the following elements (each one is a dictionary). Each style may contain placeholders (which MUST be enclosed in `{||}`) like `{|default_font_size|}`. These placeholders are replaced by values given in a dictionary `style_definition.placeholders`, c.f. example below.
+   - `!style-default {}`: The default style provided by annex, contains the following placeholders (all with default values):
+     - `default_font_size`: Font size for almost all text, default `\tiny`. Used in TikZ nodes' `font=` style option.
+     - `default_font_family`: Font family for almost all text, default `\sffamily`. Used in TikZ nodes' `font=` style option.
    - `!style-debug {}`: A debugging style provided by annex, showing some additional debug information
-   - `!style-custom`: A dict containing exactly one element:
-     - `style`: TikZ style definitions (usually for annex elements)
+   - `!style-custom`: A dict containing:
+     - `style`: TikZ style definitions (usually for annex elements), required
+     - `placeholders`: Dict as described above, optional
  - `tex_intro`: LaTeX code which is included in the output tex file before the tikzpicture. Intended use is the definition of TeX macros which are used in captions etc. (so these macros can be defined in the same context as their usage). You may want to use `\providecommand` instead of `\newcommand`, in case you have multiple figures with the same commands.
 
 Full example for `options`:
@@ -37,12 +40,16 @@ options:
   colsep: 0.2\textwidth
   rowsep: 0ex
   styles:
-    - !style-default {}
-    #- !style-debug {}  # Remove leading "#" to enable debug output
+    - !style-default
+      placeholders:  # Optional, default style has default values for all placeholders
+        default_font_size: '\scriptsize'
+    #- !style-debug {}  # Remove leading "#" to enable debug output, note that the dict {} MUST be given even if emtpy
     - !style-custom
       style: |
-        annex_multistep_caption_text/.style={font=\sffamily\tiny\color{teal}},
+        annex_multistep_caption_text/.style={font=\sffamily{|my_custom_style_font_size|}\color{teal}},
         annex_condensed_box/.style={draw=teal,rounded corners=1ex,inner sep=1pt},
+      placeholders:  # Note the usage of "{|my_custom_style_font_size|}" in annex_multistep_caption_text
+        my_custom_style_font_size: '\tiny' # Important: The 'default_font_size' placeholder is NOT automatically available here!
   tex_intro: |
     \providecommand{\rfc}[1]{\href{https://datatracker.ietf.org/doc/html/rfc#1}{RFC #1}}
     \providecommand{\red}[1]{\textcolor{red}{#1}}
@@ -77,6 +84,7 @@ protocol:
     - &server
       !Party
       name: Webserver
+      column: *browser  # Can be used to put several parties in one column
     - &placeholder-column
       !dummy-party  # dummy-parties "reserve" a column, e.g., for notes.
   
