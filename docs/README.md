@@ -117,6 +117,7 @@ All non-dummy parties have to be started and ended in order to be visible.
   party: *browser  # Required
 - !end-party
   party: *browser  # Required
+  silent: false    # Hide the end party node (default false)
 ```
 
 ![](start_stop_browser.png)

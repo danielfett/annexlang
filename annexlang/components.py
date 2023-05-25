@@ -128,8 +128,8 @@ class ProtocolStep(ProtocolObject):
             line_counter = 0
             out = ""
             for line in self.lines_below:
-                pos = "8pt" + ("+8pt" * line_counter)
-                out += r"""node [%s,below=%s,anchor=base](%s){%s} """ % (
+                pos = "1.5pt" + ("+8pt" * line_counter)
+                out += r"""node [anchor=north,inner sep=0pt,%s,below=%s](%s){%s} """ % (
                     self.text_style,
                     pos,
                     self.create_affecting_node_name(parties=[]),
