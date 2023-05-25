@@ -282,6 +282,8 @@ class EndParty(ProtocolStep):
     
     def tikz(self):
         pos = self.get_pos(self.party.column, self.line)
+        if getattr(self, 'silent', False):
+            return fr"""\node[name={self.node_name}] at ({pos}) {{}};"""
         text = self.party.name
         out = ""
         if getattr(self.party, "multiple", False):
@@ -294,6 +296,8 @@ class EndParty(ProtocolStep):
 
     @property
     def height(self):
+        if getattr(self, 'silent', False):
+            return "0ex", "center"
         return "5ex", "center"
 
 
