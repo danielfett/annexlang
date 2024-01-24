@@ -259,6 +259,34 @@ class ScriptAction(Action):
         return fr"""%% draw script action arrow
         \draw[annex_script_action_arrow{rev}{self.tikz_extra_style}] ({self.node_name}.{direction}) to  {self.tikz_above} ({dest});"""
 
+    def tikz_notes(self):
+        is_left_to_right = self.src.column < self.dest.column
+        dest = self.get_pos(self.dest.column, self.line)
+        out = ""
+        if hasattr(self, 'note_right'):
+            note_right_for_tex = str(self.note_right).strip().replace('\n', '\\\\')
+            if is_left_to_right:
+                # Position note relative to action arrow target
+                note_base_pos = dest
+            else:
+                # Position note relative to action label node
+                note_base_pos = self.node_name
+            out += fr"""\node[right=1pt of {note_base_pos},anchor=west,
+                            inner sep=0pt,annex_note{self.tikz_note_style}
+                           ] {'{' + self.contour(note_right_for_tex) + '}'}; """
+        if hasattr(self, 'note_left'):
+            note_left_for_tex = str(self.note_left).strip().replace('\n', '\\\\')
+            if is_left_to_right:
+                # Position note relative to action label node
+                note_base_pos = self.node_name
+            else:
+                # Position note relative to action arrow target
+                note_base_pos = dest
+            out += fr"""\node[left=1pt of {note_base_pos},anchor=east,
+                            inner sep=0pt,annex_note{self.tikz_note_style}
+                           ] {'{' + self.contour(note_left_for_tex) + '}'}; """
+        return out
+
     @property
     def height(self):
         return "4ex", "center"
